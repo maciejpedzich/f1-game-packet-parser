@@ -1,8 +1,7 @@
 pub mod motion;
 pub mod session;
 pub mod lap_data;
-
-use crate::packets::motion::CarMotionData;
+pub mod event;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine,
@@ -11,9 +10,11 @@ use crate::constants::{
     TrackId, Weather, MAX_AI_DIFFICULTY, MAX_NUM_CARS, MAX_NUM_MARSHAL_ZONES,
     MAX_NUM_WEATHER_FORECAST_SAMPLES,
 };
+use crate::packets::event::EventDataDetails;
+use crate::packets::lap_data::LapData;
+use crate::packets::motion::CarMotionData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
-use crate::packets::lap_data::LapData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -178,6 +179,23 @@ pub struct F1PacketLapData {
     /// Index of rival's car in time trial mode (255 if invalid).
     #[br(map(u8_to_usize))]
     pub time_trial_rival_car_index: usize,
+}
+
+/// Various notable events that happen during a session.
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, import(_packet_format: u16))]
+pub struct F1PacketEventData {
+    /// 4-letter event code.
+    #[br(
+        try_map(|bytes: [u8; 4]| String::from_utf8(bytes.to_vec())),
+        restore_position
+    )]
+    pub event_string_code: String,
+    /// Extra data for this event.
+    pub event_details: EventDataDetails,
 }
 
 /// Extended motion data for player's car. Available as a:

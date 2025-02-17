@@ -2,7 +2,7 @@ pub mod constants;
 pub mod packets;
 
 use crate::constants::PacketId;
-use crate::packets::{F1PacketMotionData, F1PacketSessionData};
+use crate::packets::{F1PacketEventData, F1PacketLapData, F1PacketMotionData, F1PacketSessionData};
 
 use binrw::io::Cursor;
 use binrw::{BinRead, BinReaderExt, BinResult};
@@ -75,4 +75,10 @@ pub struct F1PacketBody {
     /// Data about the ongoing session.
     #[br(if(packet_id == PacketId::Session), args(packet_format))]
     pub session: Option<F1PacketSessionData>,
+    /// Lap data for all cars on track.
+    #[br(if(packet_id == PacketId::LapData), args(packet_format))]
+    pub lap: Option<F1PacketLapData>,
+    /// Details of events that happen during the course of a session.
+    #[br(if(packet_id == PacketId::Event), args(packet_format))]
+    pub event: Option<F1PacketEventData>,
 }
