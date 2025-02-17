@@ -5,6 +5,7 @@ use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
 /// Lap data for a car on track.
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
