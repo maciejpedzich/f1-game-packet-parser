@@ -8,9 +8,17 @@ use serde::{Deserialize, Serialize};
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
-#[br(little, import(_packet_format: u16))]
+#[br(
+    little,
+    import(_packet_format: u16),
+    assert(
+        (0.0..1.0).contains(&zone_start),
+        "Marshal zone has an invalid zone start value: {}",
+        zone_start
+    )
+)]
 pub struct MarshalZone {
-    /// Fraction (0..1) of way through the lap the marshal zone starts.
+    /// Fraction (in range `(0.0..1.0)`) of way through the lap the marshal zone starts.
     pub zone_start: f32,
     /// Flag that's currently being waved in the marshal zone.
     pub zone_flag: MarshalZoneFlag,
@@ -20,7 +28,15 @@ pub struct MarshalZone {
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
-#[br(little, import(_packet_format: u16))]
+#[br(
+    little,
+    import(_packet_format: u16),
+    assert(
+        rain_percentage <= 100,
+        "Weather forecast sample has an invalid rain percentage value: {}",
+        rain_percentage
+    )
+)]
 pub struct WeatherForecastSample {
     /// Session's type.
     pub session_type: SessionType,
