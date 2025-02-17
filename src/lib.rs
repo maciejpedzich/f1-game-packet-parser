@@ -2,7 +2,7 @@ pub mod constants;
 pub mod packets;
 
 use crate::constants::PacketId;
-use crate::packets::F1PacketMotionData;
+use crate::packets::{F1PacketMotionData, F1PacketSessionData};
 
 use binrw::io::Cursor;
 use binrw::{BinRead, BinReaderExt, BinResult};
@@ -69,4 +69,6 @@ pub struct F1PacketHeader {
 pub struct F1PacketBody {
     #[br(if(packet_id == PacketId::Motion), args(packet_format))]
     pub motion: Option<F1PacketMotionData>,
+    #[br(if(packet_id == PacketId::Session), args(packet_format))]
+    pub session: Option<F1PacketSessionData>,
 }
