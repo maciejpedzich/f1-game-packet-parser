@@ -159,6 +159,8 @@ pub struct F1PacketSessionData {
     pub game_mode: GameMode,
     /// Ruleset's identifier.
     pub ruleset: Ruleset,
+    /// Local time of day - minutes since midnight
+    pub time_of_day: u32,
     /// Session's length.
     pub session_length: SessionLength,
 }

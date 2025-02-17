@@ -1,4 +1,4 @@
-use super::u8_to_usize;
+use super::{u8_to_bool, u8_to_usize};
 use crate::constants::{ButtonStatus, InfringementType, PenaltyType};
 
 use binrw::BinRead;
@@ -83,6 +83,17 @@ pub enum EventDataDetails {
         vehicle_index: usize,
         /// Top speed achieved in kilometres per hour.
         speed: f32,
+        /// Whether the driver is overall fastest in the session.
+        #[br(map(u8_to_bool))]
+        is_overall_fastest_in_session: bool,
+        /// Whether this speed is personal fastest in the session.
+        #[br(map(u8_to_bool))]
+        is_driver_fastest_in_session: bool,
+        /// Index of the vehicle that's the fastest in the session.
+        #[br(map(u8_to_usize))]
+        fastest_vehicle_index: usize,
+        /// Fastest speed in the session in kilometres per hour.
+        fastest_speed_in_session: f32,
     },
     /// Sent when a start light is lit.
     #[br(magic = b"STLG")]
