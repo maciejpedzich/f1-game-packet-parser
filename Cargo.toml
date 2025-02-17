@@ -1,0 +1,9 @@
+[package]
+name = "f1-game-packet-parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+binrw = "0.14"
+bitflags = "2.8"
+serde = { version = "1.0", features = ["derive"] }
