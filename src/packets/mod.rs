@@ -1,15 +1,19 @@
 pub mod motion;
 pub mod session;
+pub mod lap_data;
 
 use crate::packets::motion::CarMotionData;
 
 use crate::constants::{
-    BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
-    Formula, GameMode, GearboxAssist, Ruleset, SafetyCarStatus, SessionLength,
-    SessionType, TrackId, Weather,
+    BrakingAssist, DynamicRacingLine,
+    DynamicRacingLineType, ForecastAccuracy, Formula, GameMode,
+    GearboxAssist, Ruleset, SafetyCarStatus, SessionLength, SessionType,
+    TrackId, Weather, MAX_AI_DIFFICULTY, MAX_NUM_CARS, MAX_NUM_MARSHAL_ZONES,
+    MAX_NUM_WEATHER_FORECAST_SAMPLES,
 };
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
+use crate::packets::lap_data::LapData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -22,13 +26,14 @@ use std::string::FromUtf8Error;
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketMotionData {
     /// Motion data for all cars on track.
-    #[br(count(22))]
+    #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_motion_data: Vec<CarMotionData>,
     /// Extra player car only motion data (2022 format only).
     #[br(if(packet_format == 2022))]
     pub motion_ex_data: Option<F1PacketMotionExData>,
 }
 
+/// Data about the ongoing session.
 #[allow(clippy::struct_excessive_bools)]
 #[non_exhaustive]
 #[derive(
@@ -37,6 +42,21 @@ pub struct F1PacketMotionData {
 #[br(
     little,
     import(packet_format: u16),
+    assert(
+        num_marshal_zones <= MAX_NUM_MARSHAL_ZONES,
+        "Session packet has an invalid number of marshal zones: {}",
+        num_marshal_zones
+    ),
+    assert(
+        num_weather_forecast_samples <= MAX_NUM_WEATHER_FORECAST_SAMPLES,
+        "Session packet has an invalid number of weather forecast samples: {}",
+        num_weather_forecast_samples
+    ),
+    assert(
+        ai_difficulty <= MAX_AI_DIFFICULTY,
+        "Session packet has an invalid AI difficulty value: {}",
+        ai_difficulty
+    ),
 )]
 pub struct F1PacketSessionData {
     /// Current weather.
@@ -73,26 +93,31 @@ pub struct F1PacketSessionData {
     /// Whether SLI Pro support is active.
     #[br(map(u8_to_bool))]
     pub sli_pro_native_support: bool,
-    /// Number of marshal zones to follow.
+    /// Number of marshal zones to follow (no greater than 21).
     #[br(map(u8_to_usize))]
     pub num_marshal_zones: usize,
-    /// List of up to 21 marshal zones.
-    #[br(count(21), args{ inner: (packet_format,) })]
+    /// List of marshal zones.
+    /// Has a size of 21 regardless of the `num_marshal_zones` value.
+    #[br(count(MAX_NUM_MARSHAL_ZONES), args{ inner: (packet_format,) })]
     pub marshal_zones: Vec<MarshalZone>,
     /// Safety car deployment status.
     pub safety_car_status: SafetyCarStatus,
     /// Whether this game is online.
     #[br(map(u8_to_bool))]
     pub network_game: bool,
-    /// Number of weather samples to follow.
+    /// Number of weather samples to follow (no greater than 56).
     #[br(map(u8_to_usize))]
     pub num_weather_forecast_samples: usize,
-    /// List of up to 56 weather forecast samples.
-    #[br(count(56), args{ inner: (packet_format,) })]
+    /// List of up to weather forecast samples.
+    /// Has a size of 56 regardless of the `num_weather_forecast_samples` value.
+    #[br(
+        count(MAX_NUM_WEATHER_FORECAST_SAMPLES),
+        args{ inner: (packet_format,) }
+    )]
     pub weather_forecast_samples: Vec<WeatherForecastSample>,
     /// Weather forecast accuracy.
     pub forecast_accuracy: ForecastAccuracy,
-    /// AI difficulty rating (0-110).
+    /// AI difficulty rating in range `(0..=110)`.
     pub ai_difficulty: u8,
     /// Identifier for season - persists across saves.
     pub season_link_identifier: u32,
@@ -135,6 +160,24 @@ pub struct F1PacketSessionData {
     pub ruleset: Ruleset,
     /// Session's length.
     pub session_length: SessionLength,
+}
+
+/// Data about all the lap times of cars in the session.
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, import(packet_format: u16))]
+pub struct F1PacketLapData {
+    /// Lap data for all cars on track.
+    #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
+    pub lap_data: Vec<LapData>,
+    /// Index of personal best car in time trial mode (255 if invalid).
+    #[br(map(u8_to_usize))]
+    pub time_trial_pb_car_index: usize,
+    /// Index of rival's car in time trial mode (255 if invalid).
+    #[br(map(u8_to_usize))]
+    pub time_trial_rival_car_index: usize,
 }
 
 /// Extended motion data for player's car. Available as a:

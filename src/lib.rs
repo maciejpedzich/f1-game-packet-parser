@@ -34,7 +34,8 @@ pub struct F1Packet {
     little,
     assert(
         (2022..=2024).contains(&packet_format),
-        "Invalid or unsupported packet format"
+        "Invalid or unsupported packet format: {}",
+        packet_format
     )
 )]
 pub struct F1PacketHeader {
@@ -57,6 +58,7 @@ pub struct F1PacketHeader {
     /// Index of player's car in the array.
     pub player_car_index: u8,
     /// Index of secondary player's car in the array in splitscreen mode.
+    /// Set to 255 if not in splitscreen mode.
     pub secondary_player_car_index: u8,
 }
 
@@ -67,8 +69,10 @@ pub struct F1PacketHeader {
 )]
 #[br(little, import(packet_format: u16, packet_id: PacketId))]
 pub struct F1PacketBody {
+    /// Physics data for all the cars being driven.
     #[br(if(packet_id == PacketId::Motion), args(packet_format))]
     pub motion: Option<F1PacketMotionData>,
+    /// Data about the ongoing session.
     #[br(if(packet_id == PacketId::Session), args(packet_format))]
     pub session: Option<F1PacketSessionData>,
 }

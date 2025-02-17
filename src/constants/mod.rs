@@ -3,6 +3,11 @@ pub mod wheel_index;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+pub(crate) const MAX_NUM_CARS: usize = 22;
+pub(crate) const MAX_NUM_MARSHAL_ZONES: usize = 21;
+pub(crate) const MAX_NUM_WEATHER_FORECAST_SAMPLES: usize = 56;
+pub(crate) const MAX_AI_DIFFICULTY: u8 = 110;
+
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -407,4 +412,68 @@ pub enum SessionLength {
     MediumLong = 5,
     Long = 6,
     Full = 7,
+}
+
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum PitStatus {
+    None = 0,
+    Pitting = 1,
+    InPitArea = 2,
+}
+
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum DriverStatus {
+    InGarage = 0,
+    FlyingLap = 1,
+    InLap = 2,
+    OutLap = 3,
+    OnTrack = 4,
+}
+
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum ResultStatus {
+    Unknown = 0,
+    Inactive = 1,
+    Active = 2,
+    Finished = 3,
+    DidNotFinish = 4,
+    Disqualified = 5,
+    NotClassified = 6,
+    Retired = 7,
 }
