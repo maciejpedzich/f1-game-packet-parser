@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
-#[br(little)]
+#[br(little, import(_packet_format: u16))]
 pub struct CarMotionData {
     /// World space X position in metres
     pub world_position_x: f32,
