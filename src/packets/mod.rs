@@ -3,6 +3,7 @@ pub mod lap_data;
 pub mod motion;
 pub mod participants;
 pub mod session;
+mod car_setups;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
@@ -16,6 +17,7 @@ use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
+use crate::packets::car_setups::CarSetupData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -201,6 +203,45 @@ pub struct F1PacketEventData {
     pub event_details: EventDataDetails,
 }
 
+/// Data of participants in the session, mostly relevant for multiplayer.
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(
+    little,
+    import(packet_format: u16),
+    assert(
+        num_active_cars <= MAX_NUM_CARS,
+        "Participants packet has an invalid number of active cars: {}",
+        num_active_cars
+    )
+)]
+pub struct F1PacketParticipantsData {
+    /// Number of active cars in the data (no greater than 22)
+    #[br(map(u8_to_usize))]
+    pub num_active_cars: usize,
+    /// Data for all participants.
+    /// Should have a size equal to
+    /// [`num_active_cars`](field@F1PacketParticipantsData::num_active_cars)
+    #[br(count(num_active_cars), args{ inner: (packet_format,) })]
+    pub participants: Vec<ParticipantsData>,
+}
+
+/// Packet detailing car setups for cars in the race.
+/// In multiplayer games, other player cars will appear as blank.
+/// You will only be able to see your car setup and AI cars.
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, import(packet_format: u16))]
+pub struct F1PacketCarSetupsData {
+    /// Setup data for all cars on track.
+    /// Should have a size of 22.
+    #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
+    pub car_setups: Vec<CarSetupData>,
+}
+
 /// Extended motion data for player's car. Available as a:
 /// - part of [`F1PacketMotionData`] in the 2022 format
 /// - standalone packet from the 2023 format onwards
@@ -250,30 +291,6 @@ pub struct F1PacketMotionExData {
     pub angular_acceleration_z: f32,
     /// Current front wheels angle in radians.
     pub front_wheels_angle: f32,
-}
-
-/// Data of participants in the session, mostly relevant for multiplayer.
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        num_active_cars <= MAX_NUM_CARS,
-        "Participants packet has an invalid number of active cars: {}",
-        num_active_cars
-    )
-)]
-pub struct F1PacketParticipantsData {
-    /// Number of active cars in the data (no greater than 22)
-    #[br(map(u8_to_usize))]
-    pub num_active_cars: usize,
-    /// Data for all participants.
-    /// Should have a size equal to
-    /// [`num_active_cars`](field@F1PacketParticipantsData::num_active_cars)
-    #[br(count(num_active_cars), args{ inner: (packet_format,) })]
-    pub participants: Vec<ParticipantsData>,
 }
 
 pub(crate) fn u8_to_bool(value: u8) -> bool {
