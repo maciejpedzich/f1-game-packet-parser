@@ -131,6 +131,6 @@ pub enum EventDataDetails {
     Buttons {
         /// Bit flags specifying which buttons are currently pressed.
         #[br(map(|bits: u32| ButtonStatus::from_bits_truncate(bits)))]
-        button_status: ButtonStatus
+        button_status: ButtonStatus,
     },
 }

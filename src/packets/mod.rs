@@ -1,18 +1,19 @@
-pub mod motion;
-pub mod session;
-pub mod lap_data;
 pub mod event;
+pub mod lap_data;
+pub mod motion;
+pub mod participants;
+pub mod session;
 
 use crate::constants::{
-    BrakingAssist, DynamicRacingLine,
-    DynamicRacingLineType, ForecastAccuracy, Formula, GameMode,
-    GearboxAssist, Ruleset, SafetyCarStatus, SessionLength, SessionType,
-    TrackId, Weather, MAX_AI_DIFFICULTY, MAX_NUM_CARS, MAX_NUM_MARSHAL_ZONES,
-    MAX_NUM_WEATHER_FORECAST_SAMPLES,
+    BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
+    Formula, GameMode, GearboxAssist, Ruleset, SafetyCarStatus, SessionLength,
+    SessionType, TrackId, Weather, MAX_AI_DIFFICULTY, MAX_NUM_CARS,
+    MAX_NUM_MARSHAL_ZONES, MAX_NUM_WEATHER_FORECAST_SAMPLES,
 };
 use crate::packets::event::EventDataDetails;
 use crate::packets::lap_data::LapData;
 use crate::packets::motion::CarMotionData;
+use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
 use binrw::BinRead;
@@ -249,6 +250,30 @@ pub struct F1PacketMotionExData {
     pub angular_acceleration_z: f32,
     /// Current front wheels angle in radians.
     pub front_wheels_angle: f32,
+}
+
+/// Data of participants in the session, mostly relevant for multiplayer.
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(
+    little,
+    import(packet_format: u16),
+    assert(
+        num_active_cars <= MAX_NUM_CARS,
+        "Participants packet has an invalid number of active cars: {}",
+        num_active_cars
+    )
+)]
+pub struct F1PacketParticipantsData {
+    /// Number of active cars in the data (no greater than 22)
+    #[br(map(u8_to_usize))]
+    pub num_active_cars: usize,
+    /// Data for all participants.
+    /// Should have a size equal to
+    /// [`num_active_cars`](field@F1PacketParticipantsData::num_active_cars)
+    #[br(count(num_active_cars), args{ inner: (packet_format,) })]
+    pub participants: Vec<ParticipantsData>,
 }
 
 pub(crate) fn u8_to_bool(value: u8) -> bool {
