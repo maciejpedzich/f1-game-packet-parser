@@ -1,14 +1,11 @@
-pub mod wheel_index;
 pub mod driver_id;
+pub mod wheel_index;
 
 use binrw::BinRead;
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
 
 pub(crate) const MAX_NUM_CARS: usize = 22;
-pub(crate) const MAX_NUM_MARSHAL_ZONES: usize = 21;
-pub(crate) const MAX_NUM_WEATHER_FORECAST_SAMPLES: usize = 56;
-pub(crate) const MAX_AI_DIFFICULTY: u8 = 110;
 
 #[non_exhaustive]
 #[derive(
@@ -982,4 +979,171 @@ pub enum MfdPanelIndex {
     Engine = 3,
     Temperatures = 4,
     Closed = 255,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum TractionControl {
+    Off = 0,
+    Medium = 1,
+    Full = 2,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum FuelMix {
+    Lean = 0,
+    Standard = 1,
+    Rich = 2,
+    Max = 3,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum ErsDeployMode {
+    None = 0,
+    Medium = 1,
+    Overtake = 2,
+    Hotlap = 3,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(i8))]
+pub enum VehicleFiaFlag {
+    Unknown = -1,
+    None = 0,
+    Green = 1,
+    Blue = 2,
+    Yellow = 3,
+    Red = 4,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(i8))]
+pub enum DrsAllowed {
+    Unknown = -1,
+    NotAllowed = 0,
+    Allowed = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum ActualTyreCompound {
+    Unknown = 0,
+    F1C5 = 16,
+    F1C4 = 17,
+    F1C3 = 18,
+    F1C2 = 19,
+    F1C1 = 20,
+    F1Inter = 7,
+    F1Wet = 8,
+    ClassicDry = 9,
+    ClassicWet = 10,
+    F2SuperSoft = 11,
+    F2Soft = 12,
+    F2Medium = 13,
+    F2Hard = 14,
+    F2Wet = 15,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum VisualTyreCompound {
+    Unknown = 0,
+    F1Soft = 16,
+    F1Medium = 17,
+    F1Hard = 18,
+    F1Inter = 7,
+    F1Wet = 8,
+    ClassicDry = 9,
+    ClassicWet = 10,
+    F2SuperSoft = 19,
+    F2Soft = 20,
+    F2Medium = 21,
+    F2Hard = 22,
+    F2Wet = 15,
 }

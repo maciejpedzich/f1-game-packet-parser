@@ -27,7 +27,7 @@ use serde::{Deserialize, Serialize};
         brake
     ),
     assert(
-        (0..=100).contains(&clutch),
+        clutch <= 100,
         "Car telemetry entry has an invalid clutch value: {}",
         clutch
     ),
@@ -37,7 +37,7 @@ use serde::{Deserialize, Serialize};
         gear
     ),
     assert(
-        (0..=100).contains(&rev_lights_percent),
+        rev_lights_percent <= 100,
         "Car telemetry entry has an invalid rev lights percentage: {}",
         rev_lights_percent
     ),
@@ -51,7 +51,7 @@ pub struct CarTelemetryData {
     pub steer: f32,
     /// Amount of brake applied. Value in range `(0.0..=1.0)`.
     pub brake: f32,
-    /// Amount of clutch applied. Value in range `(0..=100)`.
+    /// Amount of clutch applied (percentage).
     pub clutch: u8,
     /// Selected gear. Neutral = 0, reverse = -1.
     pub gear: i8,

@@ -1,4 +1,5 @@
 pub mod car_setups;
+pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
 pub mod lap_data;
@@ -9,8 +10,7 @@ pub mod session;
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
     Formula, GameMode, GearboxAssist, MfdPanelIndex, Ruleset, SafetyCarStatus,
-    SessionLength, SessionType, TrackId, Weather, MAX_AI_DIFFICULTY,
-    MAX_NUM_CARS, MAX_NUM_MARSHAL_ZONES, MAX_NUM_WEATHER_FORECAST_SAMPLES,
+    SessionLength, SessionType, TrackId, Weather, MAX_NUM_CARS,
 };
 use crate::packets::event::EventDataDetails;
 use crate::packets::lap_data::LapData;
@@ -19,6 +19,7 @@ use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
 use crate::packets::car_setups::CarSetupData;
+use crate::packets::car_status::CarStatusData;
 use crate::packets::car_telemetry::CarTelemetryData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
@@ -49,17 +50,17 @@ pub struct F1PacketMotionData {
     little,
     import(packet_format: u16),
     assert(
-        num_marshal_zones <= MAX_NUM_MARSHAL_ZONES,
+        num_marshal_zones <= 21,
         "Session packet has an invalid number of marshal zones: {}",
         num_marshal_zones
     ),
     assert(
-        num_weather_forecast_samples <= MAX_NUM_WEATHER_FORECAST_SAMPLES,
+        num_weather_forecast_samples <= 56,
         "Session packet has an invalid number of weather forecast samples: {}",
         num_weather_forecast_samples
     ),
     assert(
-        ai_difficulty <= MAX_AI_DIFFICULTY,
+        ai_difficulty <= 110,
         "Session packet has an invalid AI difficulty value: {}",
         ai_difficulty
     ),
@@ -104,7 +105,7 @@ pub struct F1PacketSessionData {
     pub num_marshal_zones: usize,
     /// List of marshal zones.
     /// Has a size of 21 regardless of the `num_marshal_zones` value.
-    #[br(count(MAX_NUM_MARSHAL_ZONES), args{ inner: (packet_format,) })]
+    #[br(count(21), args{ inner: (packet_format,) })]
     pub marshal_zones: Vec<MarshalZone>,
     /// Safety car deployment status.
     pub safety_car_status: SafetyCarStatus,
@@ -116,10 +117,7 @@ pub struct F1PacketSessionData {
     pub num_weather_forecast_samples: usize,
     /// List of up to weather forecast samples.
     /// Has a size of 56 regardless of the `num_weather_forecast_samples` value.
-    #[br(
-        count(MAX_NUM_WEATHER_FORECAST_SAMPLES),
-        args{ inner: (packet_format,) }
-    )]
+    #[br(count(56), args{ inner: (packet_format,) })]
     pub weather_forecast_samples: Vec<WeatherForecastSample>,
     /// Weather forecast accuracy.
     pub forecast_accuracy: ForecastAccuracy,
@@ -224,8 +222,7 @@ pub struct F1PacketParticipantsData {
     #[br(map(u8_to_usize))]
     pub num_active_cars: usize,
     /// Data for all participants.
-    /// Should have a size equal to
-    /// [`num_active_cars`](field@F1PacketParticipantsData::num_active_cars)
+    /// Should have a size equal to `num_active_cars`.
     #[br(count(num_active_cars), args{ inner: (packet_format,) })]
     pub participants: Vec<ParticipantsData>,
 }
@@ -261,18 +258,27 @@ pub struct F1PacketCarSetupsData {
 )]
 pub struct F1PacketCarTelemetryData {
     /// Telemetry data for all cars on track.
-    /// Should have a size of 22
-    #[br(
-        count(MAX_NUM_CARS),
-        args{ inner: (packet_format,) }
-    )]
+    /// Should have a size of 22.
+    #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_telemetry_data: Vec<CarTelemetryData>,
     /// Index of currently open MFD panel.
     pub mfd_panel_index: MfdPanelIndex,
-    /// See [`mfd_panel_index`](field@F1PacketCarTelemetryData::mfd_panel_index)
+    /// See [`mfd_panel_index`](field@F1PacketCarTelemetryData::mfd_panel_index).
     pub mfd_panel_index_secondary_player: MfdPanelIndex,
     /// Suggested gear (0 if no gear suggested).
     pub suggested_gear: i8,
+}
+
+/// Car status data for each car in the race.
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, import(packet_format: u16))]
+pub struct F1PacketCarStatusData {
+    /// Status data for all cars. Should have a size of 22.
+    #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
+    pub car_status_data: Vec<CarStatusData>,
 }
 
 /// Extended motion data for player's car. Available as a:
