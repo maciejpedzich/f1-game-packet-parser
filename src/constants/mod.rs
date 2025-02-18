@@ -1,4 +1,5 @@
 pub mod wheel_index;
+pub mod driver_id;
 
 use binrw::BinRead;
 use bitflags::bitflags;
@@ -880,4 +881,105 @@ pub enum Nationality {
 pub enum YourTelemetry {
     Restricted = 0,
     Public = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum Surface {
+    Tarmac = 0,
+    RumbleStrip = 1,
+    Concrete = 2,
+    Rock = 3,
+    Gravel = 4,
+    Mud = 5,
+    Sand = 6,
+    Grass = 7,
+    Water = 8,
+    Cobblestone = 9,
+    Metal = 10,
+    Ridged = 11,
+}
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Ord,
+    PartialOrd,
+    Hash,
+    Serialize,
+    Deserialize,
+)]
+pub struct RevLights(u16);
+
+bitflags! {
+    impl RevLights: u16 {
+        /// 1st left (1st leftmost) LED. Has a value of `0x0001`.
+        const LEFT_1 = 0x0001;
+        /// 2nd left (2nd leftmost) LED. Has a value of `0x0002`.
+        const LEFT_2 = 0x0002;
+        /// 3rd left (3rd leftmost) LED. Has a value of `0x0004`.
+        const LEFT_3 = 0x0004;
+        /// 4th left (4th leftmost) LED. Has a value of `0x0008`.
+        const LEFT_4 = 0x0008;
+        /// 5th left (5th leftmost) LED. Has a value of `0x0010`.
+        const LEFT_5 = 0x0010;
+        /// 1st middle (6th leftmost)  LED. Has a value of `0x0020`.
+        const MIDDLE_1 = 0x0020;
+        /// 2nd middle (7th leftmost) LED. Has a value of `0x0040`.
+        const MIDDLE_2 = 0x0040;
+        /// 3rd middle (8th leftmost) LED. Has a value of `0x0080`.
+        const MIDDLE_3 = 0x0080;
+        /// 4th middle (9th leftmost) LED . Has a value of `0x0100`.
+        const MIDDLE_4 = 0x0100;
+        /// 5th middle (10th leftmost) LED . Has a value of `0x0200`.
+        const MIDDLE_5 = 0x0200;
+        /// 1st right (11th leftmost) LED. Has a value of `0x0400`.
+        const RIGHT_1 = 0x0400;
+        /// 2nd right (12th leftmost) LED. Has a value of `0x0800`.
+        const RIGHT_2 = 0x0800;
+        /// 3rd right (13th leftmost) LED. Has a value of `0x1000`.
+        const RIGHT_3 = 0x1000;
+        /// 4th right (14th leftmost) LED. Has a value of `0x2000`.
+        const RIGHT_4 = 0x2000;
+        /// 5th right (15th leftmost) LED. Has a value of `0x4000`.
+        const RIGHT_5 = 0x4000;
+    }
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum MfdPanelIndex {
+    CarSetup = 0,
+    Pits = 1,
+    Damage = 2,
+    Engine = 3,
+    Temperatures = 4,
+    Closed = 255,
 }

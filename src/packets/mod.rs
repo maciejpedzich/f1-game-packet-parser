@@ -1,15 +1,16 @@
+pub mod car_setups;
+pub mod car_telemetry;
 pub mod event;
 pub mod lap_data;
 pub mod motion;
 pub mod participants;
 pub mod session;
-mod car_setups;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
-    Formula, GameMode, GearboxAssist, Ruleset, SafetyCarStatus, SessionLength,
-    SessionType, TrackId, Weather, MAX_AI_DIFFICULTY, MAX_NUM_CARS,
-    MAX_NUM_MARSHAL_ZONES, MAX_NUM_WEATHER_FORECAST_SAMPLES,
+    Formula, GameMode, GearboxAssist, MfdPanelIndex, Ruleset, SafetyCarStatus,
+    SessionLength, SessionType, TrackId, Weather, MAX_AI_DIFFICULTY,
+    MAX_NUM_CARS, MAX_NUM_MARSHAL_ZONES, MAX_NUM_WEATHER_FORECAST_SAMPLES,
 };
 use crate::packets::event::EventDataDetails;
 use crate::packets::lap_data::LapData;
@@ -18,6 +19,7 @@ use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
 use crate::packets::car_setups::CarSetupData;
+use crate::packets::car_telemetry::CarTelemetryData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -228,9 +230,10 @@ pub struct F1PacketParticipantsData {
     pub participants: Vec<ParticipantsData>,
 }
 
-/// Packet detailing car setups for cars in the race.
+/// Car setups for all cars in the race.
 /// In multiplayer games, other player cars will appear as blank.
 /// You will only be able to see your car setup and AI cars.
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
@@ -240,6 +243,36 @@ pub struct F1PacketCarSetupsData {
     /// Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_setups: Vec<CarSetupData>,
+}
+
+/// Telemetry (such as speed, DRS, throttle application, etc.)
+/// for all cars in the race.
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(
+    little,
+    import(packet_format: u16),
+    assert(
+        (-1..=8).contains(&suggested_gear),
+        "Car telemetry entry has an invalid suggested gear value: {}",
+        suggested_gear
+    ),
+)]
+pub struct F1PacketCarTelemetryData {
+    /// Telemetry data for all cars on track.
+    /// Should have a size of 22
+    #[br(
+        count(MAX_NUM_CARS),
+        args{ inner: (packet_format,) }
+    )]
+    pub car_telemetry_data: Vec<CarTelemetryData>,
+    /// Index of currently open MFD panel.
+    pub mfd_panel_index: MfdPanelIndex,
+    /// See [`mfd_panel_index`](field@F1PacketCarTelemetryData::mfd_panel_index)
+    pub mfd_panel_index_secondary_player: MfdPanelIndex,
+    /// Suggested gear (0 if no gear suggested).
+    pub suggested_gear: i8,
 }
 
 /// Extended motion data for player's car. Available as a:

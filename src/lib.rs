@@ -2,7 +2,11 @@ pub mod constants;
 pub mod packets;
 
 use crate::constants::PacketId;
-use crate::packets::{F1PacketCarSetupsData, F1PacketEventData, F1PacketLapData, F1PacketMotionData, F1PacketParticipantsData, F1PacketSessionData};
+use crate::packets::{
+    F1PacketCarSetupsData, F1PacketCarTelemetryData, F1PacketEventData,
+    F1PacketLapData, F1PacketMotionData, F1PacketParticipantsData,
+    F1PacketSessionData,
+};
 
 use binrw::io::Cursor;
 use binrw::{BinRead, BinReaderExt, BinResult};
@@ -87,4 +91,6 @@ pub struct F1PacketBody {
     /// Car setups for each vehicle in the session.
     #[br(if(packet_id == PacketId::CarSetups), args(packet_format))]
     pub car_setups: Option<F1PacketCarSetupsData>,
+    #[br(if(packet_id == PacketId::CarTelemetry), args(packet_format))]
+    pub car_telemetry: Option<F1PacketCarTelemetryData>,
 }
