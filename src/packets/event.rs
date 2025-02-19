@@ -130,7 +130,7 @@ pub enum EventDataDetails {
     #[br(magic = b"BUTN")]
     Buttons {
         /// Bit flags specifying which buttons are currently pressed.
-        #[br(map(|bits: u32| ButtonStatus::from_bits_truncate(bits)))]
+        #[br(map(ButtonStatus::from_bits_truncate))]
         button_status: ButtonStatus,
     },
 }

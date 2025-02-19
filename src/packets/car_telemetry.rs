@@ -63,23 +63,23 @@ pub struct CarTelemetryData {
     /// Rev lights indicator (percentage).
     pub rev_lights_percent: u8,
     /// Bitmap of active rev lights.
-    #[br(map(|bits: u16| RevLights::from_bits_truncate(bits)))]
+    #[br(map(RevLights::from_bits_truncate))]
     pub rev_lights_bit_value: RevLights,
-    /// Brake temperatures in degrees Celsius.
+    /// Brakes' temperature values in degrees Celsius.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub brakes_temperature: [u16; 4],
-    /// Tyres' surface temperature in degrees Celsius.
+    /// Tyres' surface temperature values in degrees Celsius.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub tyres_surface_temperature: [u8; 4],
-    /// Tyres' inner temperature in degrees Celsius.
+    /// Tyres' inner temperature values in degrees Celsius.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub tyres_inner_temperature: [u8; 4],
     /// Engine's temperature in degrees Celsius
     pub engine_temperature: u16,
-    /// Tyres' pressue temperature in degrees Celsius.
+    /// Tyre pressure values in PSI.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub tyres_pressure: [f32; 4],
