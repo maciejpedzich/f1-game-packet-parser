@@ -3,9 +3,10 @@ pub mod packets;
 
 use crate::constants::PacketId;
 use crate::packets::{
-    F1PacketCarSetups, F1PacketCarStatus, F1PacketCarTelemetry, F1PacketEvent,
-    F1PacketFinalClassification, F1PacketLap, F1PacketMotion,
-    F1PacketParticipants, F1PacketSession,
+    F1PacketCarDamage, F1PacketCarSetups, F1PacketCarStatus,
+    F1PacketCarTelemetry, F1PacketEvent, F1PacketFinalClassification,
+    F1PacketLap, F1PacketLobbyInfo, F1PacketMotion, F1PacketParticipants,
+    F1PacketSession,
 };
 
 use binrw::io::Cursor;
@@ -100,4 +101,10 @@ pub struct F1PacketBody {
     /// Final classification confirmation at the end of a race.
     #[br(if(packet_id == PacketId::FinalClassification), args(packet_format))]
     pub final_classification: Option<F1PacketFinalClassification>,
+    /// Details of players in a multiplayer lobby.
+    #[br(if(packet_id == PacketId::LobbyInfo), args(packet_format))]
+    pub lobby_info: Option<F1PacketLobbyInfo>,
+    /// Car damage parameters for all cars in the session.
+    #[br(if(packet_id == PacketId::CarDamage), args(packet_format))]
+    pub car_damage: Option<F1PacketCarDamage>,
 }

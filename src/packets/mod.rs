@@ -1,13 +1,14 @@
+mod car_damage;
 pub mod car_setups;
 pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
 pub mod final_classification;
 pub mod lap;
+mod lobby;
 pub mod motion;
 pub mod participants;
 pub mod session;
-mod lobby;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
@@ -25,6 +26,7 @@ use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
+use crate::packets::car_damage::CarDamageData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -315,6 +317,7 @@ pub struct F1PacketFinalClassification {
 }
 
 /// Packet detailing all the players that are currently in a multiplayer lobby.
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
@@ -327,7 +330,7 @@ pub struct F1PacketFinalClassification {
         num_players
     )
 )]
-pub struct F1PacketLobbyInfoData {
+pub struct F1PacketLobbyInfo {
     /// Number of players in the lobby (no greater than 22).
     #[br(map(u8_to_usize))]
     pub num_players: usize,
@@ -336,6 +339,18 @@ pub struct F1PacketLobbyInfoData {
     /// [`num_players`](field@F1PacketLobbyInfoData::num_players).
     #[br(count(num_players), args{ inner: (packet_format,) })]
     pub lobby_info_data: Vec<LobbyInfoData>,
+}
+
+/// Car damage parameters for all cars in the session.
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, import(packet_format: u16))]
+pub struct F1PacketCarDamage {
+    /// Car damage data. Should have a size of 22.
+    #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
+    pub car_damage_data: Vec<CarDamageData>,
 }
 
 /// Extended motion data for player's car. Available as a:
