@@ -19,6 +19,8 @@ pub struct LobbyInfoData {
     /// Driver's name.
     #[br(try_map(read_name))]
     pub name: String,
+    /// Player's car number
+    pub car_number: u8,
     /// Readiness status.
     pub ready_status: ReadyStatus,
 }

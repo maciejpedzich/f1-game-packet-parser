@@ -112,7 +112,8 @@ pub enum SessionType {
     OneShotQualifying = 9,
     Race = 10,
     Race2 = 11,
-    TimeTrial = 12,
+    Race3 = 12,
+    TimeTrial = 13,
 }
 
 #[non_exhaustive]

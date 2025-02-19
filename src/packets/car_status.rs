@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
     little,
     import(_packet_format: u16),
     assert(
-        max_gears <= 8,
+        max_gears <= 9,
         "Car status entry has an invalid max number of gears: {}",
         max_gears
     )
