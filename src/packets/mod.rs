@@ -1,20 +1,22 @@
-mod car_damage;
+pub mod car_damage;
 pub mod car_setups;
 pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
 pub mod final_classification;
 pub mod lap;
-mod lobby;
+pub mod lobby;
 pub mod motion;
 pub mod participants;
 pub mod session;
+pub mod session_history;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
     Formula, GameMode, GearboxAssist, MfdPanelIndex, Ruleset, SafetyCarStatus,
     SessionLength, SessionType, TrackId, Weather, MAX_NUM_CARS,
 };
+use crate::packets::car_damage::CarDamageData;
 use crate::packets::car_setups::CarSetupData;
 use crate::packets::car_status::CarStatusData;
 use crate::packets::car_telemetry::CarTelemetryData;
@@ -25,8 +27,8 @@ use crate::packets::lobby::LobbyInfoData;
 use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
+use crate::packets::session_history::{LapHistoryData, TyreStintHistoryData};
 
-use crate::packets::car_damage::CarDamageData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -351,6 +353,60 @@ pub struct F1PacketCarDamage {
     /// Car damage data. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_damage_data: Vec<CarDamageData>,
+}
+
+/// Packet detailing lap and tyre data history for a given driver in the session
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(
+    little,
+    import(packet_format: u16),
+    assert(
+        vehicle_index < MAX_NUM_CARS,
+        "Session history packet has an invalid vehicle index: {}",
+        vehicle_index
+    ),
+    assert(
+        num_laps <= 100,
+        "Session history packet has an invalid number of laps: {}",
+        num_laps
+    ),
+    assert(
+        num_tyre_stints <= 8,
+        "Session history packet has an invalid number of tyre stints: {}",
+        num_tyre_stints
+    )
+)]
+pub struct F1PacketSessionHistory {
+    /// Index of the car this packet refers to
+    #[br(map(u8_to_usize))]
+    pub vehicle_index: usize,
+    /// Number of laps in the data (including the current one)
+    #[br(map(u8_to_usize))]
+    pub num_laps: usize,
+    /// Number of tyre stints in the data (including the current one)
+    #[br(map(u8_to_usize))]
+    pub num_tyre_stints: usize,
+    /// Number of the lap the best lap time was achieved on
+    #[br(map(u8_to_usize))]
+    pub best_lap_time_lap_num: usize,
+    /// Number of the lap the best sector 1 time was achieved on
+    #[br(map(u8_to_usize))]
+    pub best_sector1_lap_num: usize,
+    /// Number of the lap the best sector 2 time was achieved on
+    #[br(map(u8_to_usize))]
+    pub best_sector2_lap_num: usize,
+    /// Number of the lap the best sector 3 time was achieved on
+    #[br(map(u8_to_usize))]
+    pub best_sector3_lap_num: usize,
+    /// Up to 100 laps
+    #[br(count(100), args{ inner: (packet_format,) })]
+    pub lap_history_data: Vec<LapHistoryData>,
+    /// Up to 8 tyre stints
+    #[br(count(8), args{ inner: (packet_format,) })]
+    pub tyre_stint_history_data: Vec<TyreStintHistoryData>,
 }
 
 /// Extended motion data for player's car. Available as a:

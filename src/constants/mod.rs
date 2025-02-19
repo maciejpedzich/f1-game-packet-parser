@@ -1167,3 +1167,30 @@ pub enum ReadyStatus {
     Ready = 1,
     Spectating = 2,
 }
+
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Ord,
+    PartialOrd,
+    Hash,
+    Serialize,
+    Deserialize,
+)]
+pub struct LapValid(u8);
+
+bitflags! {
+    impl LapValid: u8 {
+        /// Whether the whole lap is valid. Has a value of `0b0001`
+        const Overall = 0b0001;
+        /// Whether the sector 1 run is valid. Has a value of `0b0010`
+        const Sector1 = 0b0010;
+        /// Whether the sector 2 run is valid. Has a value of `0b0100`
+        const Sector2 = 0b0100;
+        /// Whether the sector 3 run is valid. Has a value of `0b1000`
+        const Sector3 = 0b1000;
+    }
+}

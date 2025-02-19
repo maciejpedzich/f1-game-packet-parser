@@ -6,7 +6,7 @@ use crate::packets::{
     F1PacketCarDamage, F1PacketCarSetups, F1PacketCarStatus,
     F1PacketCarTelemetry, F1PacketEvent, F1PacketFinalClassification,
     F1PacketLap, F1PacketLobbyInfo, F1PacketMotion, F1PacketParticipants,
-    F1PacketSession,
+    F1PacketSession, F1PacketSessionHistory,
 };
 
 use binrw::io::Cursor;
@@ -107,4 +107,7 @@ pub struct F1PacketBody {
     /// Car damage parameters for all cars in the session.
     #[br(if(packet_id == PacketId::CarDamage), args(packet_format))]
     pub car_damage: Option<F1PacketCarDamage>,
+    /// Session history data for a specific car.
+    #[br(if(packet_id == PacketId::SessionHistory), args(packet_format))]
+    pub session_history: Option<F1PacketSessionHistory>,
 }
