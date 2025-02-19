@@ -1147,3 +1147,23 @@ pub enum VisualTyreCompound {
     F2Hard = 22,
     F2Wet = 15,
 }
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum ReadyStatus {
+    NotReady = 0,
+    Ready = 1,
+    Spectating = 2,
+}

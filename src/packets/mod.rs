@@ -7,6 +7,7 @@ pub mod lap;
 pub mod motion;
 pub mod participants;
 pub mod session;
+mod lobby;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
@@ -17,12 +18,13 @@ use crate::packets::car_setups::CarSetupData;
 use crate::packets::car_status::CarStatusData;
 use crate::packets::car_telemetry::CarTelemetryData;
 use crate::packets::event::EventDataDetails;
+use crate::packets::final_classification::FinalClassificationData;
 use crate::packets::lap::LapData;
+use crate::packets::lobby::LobbyInfoData;
 use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
-use crate::packets::final_classification::FinalClassificationData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -167,7 +169,7 @@ pub struct F1PacketSession {
     pub game_mode: GameMode,
     /// Ruleset's identifier.
     pub ruleset: Ruleset,
-    /// Local time of day - minutes since midnight
+    /// Local time of day - minutes since midnight.
     pub time_of_day: u32,
     /// Session's length.
     pub session_length: SessionLength,
@@ -310,6 +312,30 @@ pub struct F1PacketFinalClassification {
     /// [`num_cars`](field@F1PacketFinalClassificationData::num_cars).
     #[br(count(num_cars), args{ inner: (packet_format,) })]
     pub final_classification_data: Vec<FinalClassificationData>,
+}
+
+/// Packet detailing all the players that are currently in a multiplayer lobby.
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(
+    little,
+    import(packet_format: u16),
+    assert(
+        num_players <= MAX_NUM_CARS,
+        "Lobby packet has an invalid number of players: {}",
+        num_players
+    )
+)]
+pub struct F1PacketLobbyInfoData {
+    /// Number of players in the lobby (no greater than 22).
+    #[br(map(u8_to_usize))]
+    pub num_players: usize,
+    /// Lobby info data for all players.
+    /// Should have a size equal to
+    /// [`num_players`](field@F1PacketLobbyInfoData::num_players).
+    #[br(count(num_players), args{ inner: (packet_format,) })]
+    pub lobby_info_data: Vec<LobbyInfoData>,
 }
 
 /// Extended motion data for player's car. Available as a:
