@@ -3,9 +3,9 @@ pub mod packets;
 
 use crate::constants::PacketId;
 use crate::packets::{
-    F1PacketCarSetupsData, F1PacketCarStatusData, F1PacketCarTelemetryData,
-    F1PacketEventData, F1PacketLapData, F1PacketMotionData,
-    F1PacketParticipantsData, F1PacketSessionData,
+    F1PacketCarSetups, F1PacketCarStatus, F1PacketCarTelemetry, F1PacketEvent,
+    F1PacketFinalClassification, F1PacketLap, F1PacketMotion,
+    F1PacketParticipants, F1PacketSession,
 };
 
 use binrw::io::Cursor;
@@ -73,26 +73,31 @@ pub struct F1PacketHeader {
 )]
 #[br(little, import(packet_format: u16, packet_id: PacketId))]
 pub struct F1PacketBody {
-    /// Physics data for all the cars being driven.
+    /// Physics data for all cars in the session.
     #[br(if(packet_id == PacketId::Motion), args(packet_format))]
-    pub motion: Option<F1PacketMotionData>,
+    pub motion: Option<F1PacketMotion>,
     /// Data about the ongoing session.
     #[br(if(packet_id == PacketId::Session), args(packet_format))]
-    pub session: Option<F1PacketSessionData>,
+    pub session: Option<F1PacketSession>,
     /// Lap data for all cars on track.
     #[br(if(packet_id == PacketId::LapData), args(packet_format))]
-    pub lap: Option<F1PacketLapData>,
+    pub lap: Option<F1PacketLap>,
     /// Details of events that happen during the course of a session.
     #[br(if(packet_id == PacketId::Event), args(packet_format))]
-    pub event: Option<F1PacketEventData>,
+    pub event: Option<F1PacketEvent>,
     /// List of participants in the race.
     #[br(if(packet_id == PacketId::Participants), args(packet_format))]
-    pub participants: Option<F1PacketParticipantsData>,
-    /// Car setups for each vehicle in the session.
+    pub participants: Option<F1PacketParticipants>,
+    /// Car setups for all cars in the session.
     #[br(if(packet_id == PacketId::CarSetups), args(packet_format))]
-    pub car_setups: Option<F1PacketCarSetupsData>,
+    pub car_setups: Option<F1PacketCarSetups>,
+    /// Telemetry data for all cars in the session.
     #[br(if(packet_id == PacketId::CarTelemetry), args(packet_format))]
-    pub car_telemetry: Option<F1PacketCarTelemetryData>,
+    pub car_telemetry: Option<F1PacketCarTelemetry>,
+    /// Status data for all cars in the session.
     #[br(if(packet_id == PacketId::CarStatus), args(packet_format))]
-    pub car_status: Option<F1PacketCarStatusData>,
+    pub car_status: Option<F1PacketCarStatus>,
+    /// Final classification confirmation at the end of a race.
+    #[br(if(packet_id == PacketId::FinalClassification), args(packet_format))]
+    pub final_classification: Option<F1PacketFinalClassification>,
 }

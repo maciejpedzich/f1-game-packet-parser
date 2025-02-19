@@ -2,7 +2,8 @@ pub mod car_setups;
 pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
-pub mod lap_data;
+pub mod final_classification;
+pub mod lap;
 pub mod motion;
 pub mod participants;
 pub mod session;
@@ -12,15 +13,16 @@ use crate::constants::{
     Formula, GameMode, GearboxAssist, MfdPanelIndex, Ruleset, SafetyCarStatus,
     SessionLength, SessionType, TrackId, Weather, MAX_NUM_CARS,
 };
+use crate::packets::car_setups::CarSetupData;
+use crate::packets::car_status::CarStatusData;
+use crate::packets::car_telemetry::CarTelemetryData;
 use crate::packets::event::EventDataDetails;
-use crate::packets::lap_data::LapData;
+use crate::packets::lap::LapData;
 use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 
-use crate::packets::car_setups::CarSetupData;
-use crate::packets::car_status::CarStatusData;
-use crate::packets::car_telemetry::CarTelemetryData;
+use crate::packets::final_classification::FinalClassificationData;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
@@ -31,13 +33,13 @@ use std::string::FromUtf8Error;
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
 #[br(little, import(packet_format: u16))]
-pub struct F1PacketMotionData {
+pub struct F1PacketMotion {
     /// Motion data for all cars on track.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_motion_data: Vec<CarMotionData>,
     /// Extra player car only motion data (2022 format only).
     #[br(if(packet_format == 2022))]
-    pub motion_ex_data: Option<F1PacketMotionExData>,
+    pub motion_ex_data: Option<F1PacketMotionEx>,
 }
 
 /// Data about the ongoing session.
@@ -65,7 +67,7 @@ pub struct F1PacketMotionData {
         ai_difficulty
     ),
 )]
-pub struct F1PacketSessionData {
+pub struct F1PacketSession {
     /// Current weather.
     pub weather: Weather,
     /// Track temperature in degrees Celsius.
@@ -104,7 +106,8 @@ pub struct F1PacketSessionData {
     #[br(map(u8_to_usize))]
     pub num_marshal_zones: usize,
     /// List of marshal zones.
-    /// Has a size of 21 regardless of the `num_marshal_zones` value.
+    /// Has a size of 21 regardless of the
+    /// [`num_marshal_zones`](field@F1PacketSession::num_marshal_zones) value.
     #[br(count(21), args{ inner: (packet_format,) })]
     pub marshal_zones: Vec<MarshalZone>,
     /// Safety car deployment status.
@@ -116,7 +119,9 @@ pub struct F1PacketSessionData {
     #[br(map(u8_to_usize))]
     pub num_weather_forecast_samples: usize,
     /// List of up to weather forecast samples.
-    /// Has a size of 56 regardless of the `num_weather_forecast_samples` value.
+    /// Has a size of 56 regardless of the
+    /// [`num_weather_forecast_samples`](field@F1PacketSession::num_weather_forecast_samples)
+    /// value.
     #[br(count(56), args{ inner: (packet_format,) })]
     pub weather_forecast_samples: Vec<WeatherForecastSample>,
     /// Weather forecast accuracy.
@@ -174,7 +179,7 @@ pub struct F1PacketSessionData {
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
 #[br(little, import(packet_format: u16))]
-pub struct F1PacketLapData {
+pub struct F1PacketLap {
     /// Lap data for all cars on track.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub lap_data: Vec<LapData>,
@@ -192,7 +197,7 @@ pub struct F1PacketLapData {
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
 #[br(little, import(_packet_format: u16))]
-pub struct F1PacketEventData {
+pub struct F1PacketEvent {
     /// 4-letter event code.
     #[br(
         try_map(|bytes: [u8; 4]| String::from_utf8(bytes.to_vec())),
@@ -212,18 +217,19 @@ pub struct F1PacketEventData {
     little,
     import(packet_format: u16),
     assert(
-        num_active_cars <= MAX_NUM_CARS,
-        "Participants packet has an invalid number of active cars: {}",
-        num_active_cars
+        num_cars <= MAX_NUM_CARS,
+        "Participants packet has an invalid number of cars: {}",
+        num_cars
     )
 )]
-pub struct F1PacketParticipantsData {
+pub struct F1PacketParticipants {
     /// Number of active cars in the data (no greater than 22)
     #[br(map(u8_to_usize))]
-    pub num_active_cars: usize,
+    pub num_cars: usize,
     /// Data for all participants.
-    /// Should have a size equal to `num_active_cars`.
-    #[br(count(num_active_cars), args{ inner: (packet_format,) })]
+    /// Should have a size equal to
+    /// [`num_cars`](field@F1PacketParticipants::num_cars).
+    #[br(count(num_cars), args{ inner: (packet_format,) })]
     pub participants: Vec<ParticipantsData>,
 }
 
@@ -235,7 +241,7 @@ pub struct F1PacketParticipantsData {
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
 #[br(little, import(packet_format: u16))]
-pub struct F1PacketCarSetupsData {
+pub struct F1PacketCarSetups {
     /// Setup data for all cars on track.
     /// Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
@@ -256,14 +262,14 @@ pub struct F1PacketCarSetupsData {
         suggested_gear
     ),
 )]
-pub struct F1PacketCarTelemetryData {
+pub struct F1PacketCarTelemetry {
     /// Telemetry data for all cars on track.
     /// Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_telemetry_data: Vec<CarTelemetryData>,
     /// Index of currently open MFD panel.
     pub mfd_panel_index: MfdPanelIndex,
-    /// See [`mfd_panel_index`](field@F1PacketCarTelemetryData::mfd_panel_index).
+    /// See [`mfd_panel_index`](field@F1PacketCarTelemetry::mfd_panel_index).
     pub mfd_panel_index_secondary_player: MfdPanelIndex,
     /// Suggested gear (0 if no gear suggested).
     pub suggested_gear: i8,
@@ -275,21 +281,46 @@ pub struct F1PacketCarTelemetryData {
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
 #[br(little, import(packet_format: u16))]
-pub struct F1PacketCarStatusData {
+pub struct F1PacketCarStatus {
     /// Status data for all cars. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_status_data: Vec<CarStatusData>,
 }
 
+/// Final classification confirmation at the end of a race.
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(
+    little,
+    import(packet_format: u16),
+    assert(
+        num_cars <= MAX_NUM_CARS,
+        "Final classification packet has an invalid number of cars: {}",
+        num_cars
+    )
+)]
+pub struct F1PacketFinalClassification {
+    /// Number of cars in the final classification (no greater than 22).
+    #[br(map(u8_to_usize))]
+    pub num_cars: usize,
+    /// Final classification data for all cars.
+    /// Should have a size equal to
+    /// [`num_cars`](field@F1PacketFinalClassificationData::num_cars).
+    #[br(count(num_cars), args{ inner: (packet_format,) })]
+    pub final_classification_data: Vec<FinalClassificationData>,
+}
+
 /// Extended motion data for player's car. Available as a:
-/// - part of [`F1PacketMotionData`] in the 2022 format
+/// - part of [`F1PacketMotion`] in the 2022 format
 /// - standalone packet from the 2023 format onwards
 #[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
 #[br(little, import(_packet_format: u16))]
-pub struct F1PacketMotionExData {
+pub struct F1PacketMotionEx {
     /// Positions of suspension for each wheel.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
