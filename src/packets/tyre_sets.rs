@@ -4,6 +4,7 @@ use crate::constants::{ActualTyreCompound, SessionType, VisualTyreCompound};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+#[non_exhaustive]
 #[derive(
     BinRead,
     Eq,
@@ -33,7 +34,7 @@ pub struct TyreSetData {
     /// Tyre wear (percentage).
     pub wear: u8,
     /// Whether this set is currently available.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub available: bool,
     /// Recommended session for this tyre set.
     pub recommended_session: SessionType,
@@ -44,6 +45,6 @@ pub struct TyreSetData {
     /// Lap time delta in milliseconds compared to fitted set.
     pub lap_delta_time: i16,
     /// Whether this set is fitted or not.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub fitted: bool,
 }

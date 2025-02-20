@@ -7,6 +7,7 @@ use crate::constants::{
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
@@ -23,14 +24,14 @@ pub struct CarStatusData {
     /// How much traction control is enabled.
     pub traction_control: TractionControl,
     /// Whether ABS is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub anti_lock_brakes: bool,
     /// Fuel mix currently in use.
     pub fuel_mix: FuelMix,
     /// Front brake bias (percentage).
     pub front_brake_bias: u8,
     /// Whether the pit limiter is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub pit_limiter_enabled: bool,
     /// Current fuel mass.
     pub fuel_in_tank: f32,
@@ -75,6 +76,6 @@ pub struct CarStatusData {
     /// ERS energy deployed this lap.
     pub ers_deployed_this_lap: f32,
     /// Whether the car has paused in a network game.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub network_paused: bool,
 }

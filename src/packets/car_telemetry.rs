@@ -58,7 +58,7 @@ pub struct CarTelemetryData {
     /// Engine RPM.
     pub engine_rpm: u16,
     /// Whether DRS is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub drs_enabled: bool,
     /// Rev lights indicator (percentage).
     pub rev_lights_percent: u8,

@@ -1,6 +1,7 @@
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]

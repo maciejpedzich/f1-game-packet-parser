@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 #[br(little, import(packet_format: u16))]
 pub struct LobbyInfoData {
     /// Whether the vehicle is controlled by AI.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub ai_controlled: bool,
     /// Team's ID.
     pub team_id: u8,

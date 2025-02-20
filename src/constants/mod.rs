@@ -1,5 +1,6 @@
 pub mod driver_id;
 pub mod team_id;
+/// The wheel order is: `REAR_LEFT`, `REAR_RIGHT`, `FRONT_LEFT`, `FRONT_RIGHT`.
 pub mod wheel_index;
 
 use binrw::BinRead;
@@ -385,7 +386,7 @@ pub enum GameMode {
     Deserialize,
 )]
 #[br(little, repr(u8))]
-pub enum Ruleset {
+pub enum RuleSet {
     PracticeAndQualifying = 0,
     Race = 1,
     TimeTrial = 2,

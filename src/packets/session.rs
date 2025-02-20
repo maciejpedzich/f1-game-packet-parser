@@ -5,6 +5,7 @@ use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
 /// Section of the track supervised by marshals.
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
@@ -24,6 +25,7 @@ pub struct MarshalZone {
     pub zone_flag: MarshalZoneFlag,
 }
 
+#[non_exhaustive]
 /// Weather forecast sample for a given session.
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,

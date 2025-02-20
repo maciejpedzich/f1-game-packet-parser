@@ -2,6 +2,7 @@ use super::u8_to_bool;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
@@ -32,10 +33,10 @@ pub struct CarDamageData {
     /// Sidepod damage (percentage)
     pub sidepod_damage: u8,
     /// Whether DRS has failed
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub drs_fault: bool,
     /// Whether ERS has failed
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub ers_fault: bool,
     /// Gearbox damage (percentage)
     pub gearbox_damage: u8,
@@ -54,9 +55,9 @@ pub struct CarDamageData {
     /// Engine TC wear (percentage)
     pub engine_tc_wear: u8,
     /// Whether the engine has blown
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub engine_blown: bool,
     /// Whether the engine has seized
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub engine_seized: bool,
 }

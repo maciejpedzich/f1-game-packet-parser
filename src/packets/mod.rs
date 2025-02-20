@@ -14,7 +14,7 @@ pub mod tyre_sets;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
-    Formula, GameMode, GearboxAssist, MfdPanelIndex, Ruleset, SafetyCarStatus,
+    Formula, GameMode, GearboxAssist, MfdPanelIndex, RuleSet, SafetyCarStatus,
     SessionLength, SessionType, SpeedUnit, TemperatureUnit, TrackId, Weather,
     MAX_NUM_CARS,
 };
@@ -32,7 +32,7 @@ use crate::packets::session::{MarshalZone, WeatherForecastSample};
 use crate::packets::session_history::{LapHistoryData, TyreStintHistoryData};
 use crate::packets::tyre_sets::TyreSetData;
 
-use binrw::BinRead;
+use binrw::{BinRead, BinResult};
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
 
@@ -101,16 +101,16 @@ pub struct F1PacketSession {
     /// Pit lane's speed limit in kilometres per hour.
     pub pit_speed_limit: u8,
     /// Whether the game is paused.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub game_paused: bool,
     /// Whether the player is spectating.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub is_spectating: bool,
     /// Index of the car being spectated.
     #[br(map(u8_to_usize))]
     pub spectator_car_index: usize,
     /// Whether SLI Pro support is active.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub sli_pro_native_support: bool,
     /// Number of marshal zones to follow (no greater than 21).
     #[br(map(u8_to_usize))]
@@ -123,7 +123,7 @@ pub struct F1PacketSession {
     /// Safety car deployment status.
     pub safety_car_status: SafetyCarStatus,
     /// Whether this game is online.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub network_game: bool,
     /// Number of weather samples to follow (no greater than 56).
     #[br(map(u8_to_usize))]
@@ -151,23 +151,23 @@ pub struct F1PacketSession {
     /// Predicted position for the player to rejoin at.
     pub pit_stop_rejoin_position: u8,
     /// Whether the steering assist is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub steering_assist: bool,
     /// Type of braking assist enabled.
     pub braking_assist: BrakingAssist,
     /// Type of gearbox assist enabled.
     pub gearbox_assist: GearboxAssist,
     /// Whether the pit assist is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub pit_assist: bool,
     /// Whether the pit release assist is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub pit_release_assist: bool,
     /// Whether the ERS assist is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub ers_assist: bool,
     /// Whether the DRS assist is enabled.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub drs_assist: bool,
     /// Type of the dynamic racing line assist.
     pub dynamic_racing_line: DynamicRacingLine,
@@ -175,9 +175,9 @@ pub struct F1PacketSession {
     pub dynamic_racing_line_type: DynamicRacingLineType,
     /// Game mode's identifier.
     pub game_mode: GameMode,
-    /// Ruleset's identifier.
-    pub ruleset: Ruleset,
-    /// Local time of day - minutes since midnight.
+    /// Rule set's identifier.
+    pub rule_set: RuleSet,
+    /// Local time of day as minutes since midnight.
     pub time_of_day: u32,
     /// Session's length.
     pub session_length: SessionLength,
@@ -209,6 +209,10 @@ pub struct F1PacketSession {
     /// Available from the 2023 format onwards.
     #[br(if(packet_format >= 2023))]
     pub num_red_flag_periods: u8,
+    /// Whether equal car performance is enabled.
+    /// Available from the 2024 format onwards.
+    #[br(try_map(u8_to_bool))]
+    pub equal_car_performance: bool,
 }
 
 /// Data about all the lap times of cars in the session.
@@ -345,7 +349,7 @@ pub struct F1PacketFinalClassification {
     pub num_cars: usize,
     /// Final classification data for all cars.
     /// Should have a size equal to
-    /// [`num_cars`](field@F1PacketFinalClassificationData::num_cars).
+    /// [`num_cars`](field@F1PacketFinalClassification::num_cars).
     #[br(count(num_cars), args{ inner: (packet_format,) })]
     pub final_classification_data: Vec<FinalClassificationData>,
 }
@@ -370,7 +374,7 @@ pub struct F1PacketLobbyInfo {
     pub num_players: usize,
     /// Lobby info data for all players.
     /// Should have a size equal to
-    /// [`num_players`](field@F1PacketLobbyInfoData::num_players).
+    /// [`num_players`](field@F1PacketLobbyInfo::num_players).
     #[br(count(num_players), args{ inner: (packet_format,) })]
     pub lobby_info_data: Vec<LobbyInfoData>,
 }
@@ -517,8 +521,21 @@ pub struct F1PacketMotionEx {
     pub wheel_vert_force: [f32; 4],
 }
 
-pub(crate) fn u8_to_bool(value: u8) -> bool {
-    value == 1
+#[derive(Debug, PartialEq)]
+pub(crate) struct InvalidBoolValue(u8);
+
+impl core::fmt::Display for InvalidBoolValue {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "Invalid bool value: {}", self.0)
+    }
+}
+
+pub(crate) fn u8_to_bool(value: u8) -> Result<bool, InvalidBoolValue> {
+    match value {
+        0 => Ok(false),
+        1 => Ok(true),
+        _ => Err(InvalidBoolValue(value)),
+    }
 }
 
 pub(crate) fn u8_to_usize(value: u8) -> usize {

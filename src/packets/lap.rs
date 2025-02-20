@@ -63,7 +63,7 @@ pub struct LapData {
     /// S1 = 0, S2 = 1, S3 = 2.
     pub sector: u8,
     /// Whether the current lap is invalid.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub current_lap_invalid: bool,
     /// Accumulated time penalties to be added in seconds.
     pub penalties: u8,
@@ -90,13 +90,13 @@ pub struct LapData {
     /// Status of the driver's result.
     pub result_status: ResultStatus,
     /// Whether the pit lane timer is active.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub pit_lane_timer_active: bool,
     /// Current time spent in the pit lane in milliseconds.
     pub pit_lane_time_in_lane_ms: u16,
     /// Time of the actual pit stop in milliseconds.
     pub pit_stop_timer_ms: u16,
     /// Whether the car should serve a penalty at this stop.
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub pit_stop_should_serve_pen: bool,
 }

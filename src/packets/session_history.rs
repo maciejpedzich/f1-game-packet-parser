@@ -4,6 +4,7 @@ use crate::constants::{ActualTyreCompound, LapValid, VisualTyreCompound};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
@@ -34,6 +35,7 @@ pub struct LapHistoryData {
     pub lap_valid_bit_flags: LapValid,
 }
 
+#[non_exhaustive]
 #[derive(
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]

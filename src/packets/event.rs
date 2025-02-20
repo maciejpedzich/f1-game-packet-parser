@@ -84,10 +84,10 @@ pub enum EventDataDetails {
         /// Top speed achieved in kilometres per hour.
         speed: f32,
         /// Whether the driver is overall fastest in the session.
-        #[br(map(u8_to_bool))]
+        #[br(try_map(u8_to_bool))]
         is_overall_fastest_in_session: bool,
         /// Whether this speed is personal fastest in the session.
-        #[br(map(u8_to_bool))]
+        #[br(try_map(u8_to_bool))]
         is_driver_fastest_in_session: bool,
         /// Index of the vehicle that's the fastest in the session.
         #[br(map(u8_to_usize))]
@@ -129,7 +129,7 @@ pub enum EventDataDetails {
     /// Sent when the button status has changed.
     #[br(magic = b"BUTN")]
     Buttons {
-        /// Bit flags specifying which buttons are currently pressed.
+        /// Bitmap specifying which buttons are currently pressed.
         #[br(map(ButtonStatus::from_bits_truncate))]
         button_status: ButtonStatus,
     },

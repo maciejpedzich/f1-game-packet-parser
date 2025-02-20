@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 #[br(little, import(packet_format: u16))]
 pub struct ParticipantsData {
     /// Whether the vehicle is controlled by AI
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub ai_controlled: bool,
     /// Driver's ID
     pub driver_id: u8,
@@ -20,7 +20,7 @@ pub struct ParticipantsData {
     /// Team's ID
     pub team_id: u8,
     /// Whether my team is being used
-    #[br(map(u8_to_bool))]
+    #[br(try_map(u8_to_bool))]
     pub my_team: bool,
     /// Race number of the car
     pub race_number: u8,
@@ -33,7 +33,7 @@ pub struct ParticipantsData {
     pub your_telemetry: Option<YourTelemetry>,
     /// Whether this player's "show online names" setting is on.
     /// Available from the 2023 format onwards.
-    #[br(if(packet_format >= 2023), map(u8_to_bool))]
+    #[br(if(packet_format >= 2023), try_map(u8_to_bool))]
     pub show_online_names: bool,
     /// Player's platform.
     /// Available from the 2023 format onwards.
