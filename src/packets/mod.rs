@@ -13,10 +13,9 @@ pub mod session_history;
 pub mod tyre_sets;
 
 use crate::constants::{
-    BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
-    Formula, GameMode, GearboxAssist, MfdPanelIndex, RuleSet, SafetyCarStatus,
-    SessionLength, SessionType, SpeedUnit, TemperatureUnit, TrackId, Weather,
-    MAX_NUM_CARS,
+    BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy, Formula,
+    GameMode, GearboxAssist, MfdPanelIndex, RuleSet, SafetyCarStatus, SessionLength,
+    SessionType, SpeedUnit, TemperatureUnit, TrackId, Weather, MAX_NUM_CARS,
 };
 use crate::packets::car_damage::CarDamageData;
 use crate::packets::car_setups::CarSetupData;
@@ -32,15 +31,13 @@ use crate::packets::session::{MarshalZone, WeatherForecastSample};
 use crate::packets::session_history::{LapHistoryData, TyreStintHistoryData};
 use crate::packets::tyre_sets::TyreSetData;
 
-use binrw::{BinRead, BinResult};
+use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 use std::string::FromUtf8Error;
 
 /// Physics data for all the cars being driven.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketMotion {
     /// Motion data for all cars on track.
@@ -55,9 +52,7 @@ pub struct F1PacketMotion {
 /// Data about the ongoing session.
 #[allow(clippy::struct_excessive_bools)]
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(packet_format: u16),
@@ -217,9 +212,7 @@ pub struct F1PacketSession {
 
 /// Data about all the lap times of cars in the session.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketLap {
     /// Lap data for all cars on track.
@@ -235,9 +228,7 @@ pub struct F1PacketLap {
 
 /// Various notable events that happen during a session.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(_packet_format: u16))]
 pub struct F1PacketEvent {
     /// 4-letter event code.
@@ -252,9 +243,7 @@ pub struct F1PacketEvent {
 
 /// Data of participants in the session, mostly relevant for multiplayer.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(packet_format: u16),
@@ -279,9 +268,7 @@ pub struct F1PacketParticipants {
 /// In multiplayer games, other player cars will appear as blank.
 /// You will only be able to see your car setup and AI cars.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarSetups {
     /// Setup data for all cars on track.
@@ -292,9 +279,7 @@ pub struct F1PacketCarSetups {
 
 /// Telemetry (such as speed, DRS, throttle application, etc.)
 /// for all cars in the race.
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(packet_format: u16),
@@ -319,9 +304,7 @@ pub struct F1PacketCarTelemetry {
 
 /// Car status data for each car in the race.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarStatus {
     /// Status data for all cars. Should have a size of 22.
@@ -331,9 +314,7 @@ pub struct F1PacketCarStatus {
 
 /// Final classification confirmation at the end of a race.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(packet_format: u16),
@@ -356,9 +337,7 @@ pub struct F1PacketFinalClassification {
 
 /// Packet detailing all the players that are currently in a multiplayer lobby.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(packet_format: u16),
@@ -381,9 +360,7 @@ pub struct F1PacketLobbyInfo {
 
 /// Car damage parameters for all cars in the session.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarDamage {
     /// Car damage data. Should have a size of 22.
@@ -393,9 +370,7 @@ pub struct F1PacketCarDamage {
 
 /// Packet detailing lap and tyre data history for a given driver in the session
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(packet_format: u16),
@@ -448,9 +423,7 @@ pub struct F1PacketSessionHistory {
 /// In-depth details about tyre sets assigned to a vehicle during the session.
 /// Available from the 2023 format onwards.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketTyreSets {
     /// Index of the car this packet relates to.
@@ -468,9 +441,7 @@ pub struct F1PacketTyreSets {
 /// - part of [`F1PacketMotion`] in the 2022 format
 /// - standalone packet from the 2023 format onwards
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketMotionEx {
     /// Positions of suspension for each wheel.

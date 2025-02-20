@@ -5,9 +5,7 @@ use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct ParticipantsData {
     /// Whether the vehicle is controlled by AI

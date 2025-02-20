@@ -5,9 +5,7 @@ use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little)]
 pub enum EventDataDetails {
     /// Sent when the session starts.

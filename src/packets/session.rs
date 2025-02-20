@@ -1,14 +1,10 @@
-use crate::constants::{
-    MarshalZoneFlag, SessionType, TemperatureChange, Weather,
-};
+use crate::constants::{MarshalZoneFlag, SessionType, TemperatureChange, Weather};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
 /// Section of the track supervised by marshals.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(_packet_format: u16),
@@ -27,9 +23,7 @@ pub struct MarshalZone {
 
 #[non_exhaustive]
 /// Weather forecast sample for a given session.
-#[derive(
-    BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     import(_packet_format: u16),

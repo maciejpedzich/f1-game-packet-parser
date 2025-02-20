@@ -4,10 +4,9 @@ pub mod packets;
 use crate::constants::PacketId;
 use crate::packets::{
     u8_to_usize, F1PacketCarDamage, F1PacketCarSetups, F1PacketCarStatus,
-    F1PacketCarTelemetry, F1PacketEvent, F1PacketFinalClassification,
-    F1PacketLap, F1PacketLobbyInfo, F1PacketMotion, F1PacketMotionEx,
-    F1PacketParticipants, F1PacketSession, F1PacketSessionHistory,
-    F1PacketTyreSets,
+    F1PacketCarTelemetry, F1PacketEvent, F1PacketFinalClassification, F1PacketLap,
+    F1PacketLobbyInfo, F1PacketMotion, F1PacketMotionEx, F1PacketParticipants,
+    F1PacketSession, F1PacketSessionHistory, F1PacketTyreSets,
 };
 
 use binrw::io::Cursor;
@@ -33,9 +32,7 @@ pub struct F1Packet {
 
 /// F1 game packet's header.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(
     little,
     assert(
@@ -81,9 +78,7 @@ pub struct F1PacketHeader {
 
 /// F1 game packet's body.
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16, packet_id: PacketId))]
 pub struct F1PacketBody {
     /// Physics data for all cars in the session.

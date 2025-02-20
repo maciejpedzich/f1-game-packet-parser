@@ -5,9 +5,7 @@ use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct LapHistoryData {
     /// Lap time in milliseconds.
@@ -36,9 +34,7 @@ pub struct LapHistoryData {
 }
 
 #[non_exhaustive]
-#[derive(
-    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(_packet_format: u16))]
 pub struct TyreStintHistoryData {
     /// Lap the tyre usage ends on (255 if current tyre).

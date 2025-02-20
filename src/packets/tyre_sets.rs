@@ -6,16 +6,7 @@ use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
 #[derive(
-    BinRead,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Copy,
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
 #[br(
     little,
