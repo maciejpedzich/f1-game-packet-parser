@@ -1,4 +1,5 @@
 pub mod driver_id;
+pub mod team_id;
 pub mod wheel_index;
 
 use binrw::BinRead;
@@ -210,6 +211,8 @@ pub enum Formula {
     Supercars = 5,
     Esports = 6,
     F22021 = 7,
+    F1World = 8,
+    F1Elimination = 9,
 }
 
 #[non_exhaustive]
@@ -350,6 +353,7 @@ pub enum DynamicRacingLineType {
 pub enum GameMode {
     EventMode = 0,
     GrandPrix = 3,
+    GrandPrix2023 = 4,
     TimeTrial = 5,
     Splitscreen = 6,
     OnlineCustom = 7,
@@ -359,8 +363,11 @@ pub enum GameMode {
     Championship = 13,
     OnlineChampionship = 14,
     OnlineWeeklyEvent = 15,
+    BrakingPoint2023 = 17,
     Career2022 = 19,
     Career2022Online = 20,
+    Career2023 = 21,
+    Career2023Online = 22,
     Benchmark = 127,
 }
 
@@ -583,6 +590,7 @@ pub enum InfringementType {
     RetryPenalty = 49,
     IllegalTimeGain = 50,
     MandatoryPitStop = 51,
+    AttributeAssigned = 54,
 }
 
 #[derive(
@@ -676,85 +684,6 @@ bitflags! {
         /// UDP Action 12. Has a value of `0x80000000`.
         const UDP_ACTION_12 = 0x80000000;
     }
-}
-
-#[non_exhaustive]
-#[derive(
-    BinRead,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Copy,
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
-)]
-#[br(little, repr(u8))]
-pub enum TeamId {
-    Mercedes = 0,
-    Ferrari = 1,
-    RedBull = 2,
-    Williams = 3,
-    AstonMartin = 4,
-    Alpine = 5,
-    /// Aliases: [`TeamId::AlphaTauri`]
-    Vcarb = 6,
-    Haas = 7,
-    McLaren = 8,
-    /// Aliases: [`TeamId::AlfaRomeo`]
-    Sauber = 9,
-    Mercedes2020 = 85,
-    Ferrari2020 = 86,
-    RedBull2020 = 87,
-    Williams2020 = 88,
-    RacingPoint2020 = 89,
-    Renault2020 = 90,
-    AlphaTauri2020 = 91,
-    Haas2020 = 92,
-    McLaren2020 = 93,
-    AlfaRomeo2020 = 94,
-    AstonMartinDb11V12 = 95,
-    AstonMartinVantage = 96,
-    AstonMartinSafetyCar = 97,
-    FerrariF8Tributo = 98,
-    FerrariRoma = 99,
-    McLaren720S = 100,
-    McLarenArtura = 101,
-    MercedesSafetyCar = 102,
-    MercedesAmgGtrPro = 103,
-    F1CustomTeam = 104,
-    Prema2021 = 106,
-    UniVirtuosi2021 = 107,
-    Carlin2021 = 108,
-    Hitech2021 = 109,
-    ArtGrandPrix2021 = 110,
-    MpMotorsport2021 = 111,
-    Charouz2021 = 112,
-    Dams2021 = 113,
-    Campos2021 = 114,
-    Bwt2021 = 115,
-    Trident2021 = 116,
-    MercedesAmgGtBlackSeries = 117,
-    Prema2022 = 118,
-    UniVirtuosi2022 = 119,
-    Carlin2022 = 120,
-    Hitech2022 = 121,
-    ArtGrandPrix2022 = 122,
-    MpMotorsport2022 = 123,
-    Charouz2022 = 124,
-    Dams2022 = 125,
-    Campos2022 = 126,
-    VanAmersfort2022 = 127,
-    Trident2022 = 128,
-    MyTeam = 255,
-}
-
-#[allow(non_upper_case_globals)]
-impl TeamId {
-    pub const AlphaTauri: TeamId = TeamId::Vcarb;
-    pub const AlfaRomeo: TeamId = TeamId::Sauber;
 }
 
 #[non_exhaustive]
@@ -1108,6 +1037,7 @@ pub enum ActualTyreCompound {
     F1C3 = 18,
     F1C2 = 19,
     F1C1 = 20,
+    F1C0 = 21,
     F1Inter = 7,
     F1Wet = 8,
     ClassicDry = 9,
@@ -1185,13 +1115,74 @@ pub struct LapValid(u8);
 
 bitflags! {
     impl LapValid: u8 {
-        /// Whether the whole lap is valid. Has a value of `0b0001`
-        const Overall = 0b0001;
-        /// Whether the sector 1 run is valid. Has a value of `0b0010`
-        const Sector1 = 0b0010;
-        /// Whether the sector 2 run is valid. Has a value of `0b0100`
-        const Sector2 = 0b0100;
-        /// Whether the sector 3 run is valid. Has a value of `0b1000`
-        const Sector3 = 0b1000;
+        /// Whether the whole lap is valid. Has a value of `0x01`.
+        const OVERALL = 0x01;
+        /// Whether the sector 1 run is valid. Has a value of `0x02`.
+        const SECTOR_1 = 0x02;
+        /// Whether the sector 2 run is valid. Has a value of `0x04`.
+        const SECTOR_2 = 0x04;
+        /// Whether the sector 3 run is valid. Has a value of `0x08`.
+        const SECTOR_3 = 0x08;
     }
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum SpeedUnit {
+    MilesPerHour = 0,
+    KilometresPerHour = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum TemperatureUnit {
+    Celsius = 0,
+    Fahrenheit = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum Platform {
+    Invalid = 0,
+    Steam = 1,
+    PlayStation = 3,
+    Xbox = 4,
+    Origin = 6,
+    Unknown = 255,
 }

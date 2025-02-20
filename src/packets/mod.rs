@@ -10,11 +10,13 @@ pub mod motion;
 pub mod participants;
 pub mod session;
 pub mod session_history;
+pub mod tyre_sets;
 
 use crate::constants::{
     BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy,
     Formula, GameMode, GearboxAssist, MfdPanelIndex, Ruleset, SafetyCarStatus,
-    SessionLength, SessionType, TrackId, Weather, MAX_NUM_CARS,
+    SessionLength, SessionType, SpeedUnit, TemperatureUnit, TrackId, Weather,
+    MAX_NUM_CARS,
 };
 use crate::packets::car_damage::CarDamageData;
 use crate::packets::car_setups::CarSetupData;
@@ -28,6 +30,7 @@ use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
 use crate::packets::session::{MarshalZone, WeatherForecastSample};
 use crate::packets::session_history::{LapHistoryData, TyreStintHistoryData};
+use crate::packets::tyre_sets::TyreSetData;
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
@@ -43,7 +46,8 @@ pub struct F1PacketMotion {
     /// Motion data for all cars on track.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_motion_data: Vec<CarMotionData>,
-    /// Extra player car only motion data (2022 format only).
+    /// Extra player car only motion data.
+    /// Only in the 2022 format.
     #[br(if(packet_format == 2022))]
     pub motion_ex_data: Option<F1PacketMotionEx>,
 }
@@ -177,6 +181,34 @@ pub struct F1PacketSession {
     pub time_of_day: u32,
     /// Session's length.
     pub session_length: SessionLength,
+    /// Speed unit used by player 1.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub speed_unit_lead_player: Option<SpeedUnit>,
+    /// Temperature unit used by player 1.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub temperature_unit_lead_player: Option<TemperatureUnit>,
+    /// Speed unit used by player 2.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub speed_unit_secondary_player: Option<SpeedUnit>,
+    /// Temperature unit used by player 2.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub temperature_unit_secondary_player: Option<TemperatureUnit>,
+    /// Number of full safety cars called during the session.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub num_safety_car_periods: u8,
+    /// Number of virtual safety cars called during the session.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub num_virtual_safety_car_periods: u8,
+    /// Number of red flags called during the session.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub num_red_flag_periods: u8,
 }
 
 /// Data about all the lap times of cars in the session.
@@ -409,6 +441,25 @@ pub struct F1PacketSessionHistory {
     pub tyre_stint_history_data: Vec<TyreStintHistoryData>,
 }
 
+/// In-depth details about tyre sets assigned to a vehicle during the session.
+/// Available from the 2023 format onwards.
+#[non_exhaustive]
+#[derive(
+    BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, import(packet_format: u16))]
+pub struct F1PacketTyreSets {
+    /// Index of the car this packet relates to.
+    #[br(map(u8_to_usize))]
+    pub vehicle_index: usize,
+    /// 13 dry + 7 wet tyre sets.
+    #[br(count(20), args{ inner: (packet_format,) })]
+    pub tyre_set_data: Vec<TyreSetData>,
+    /// Index of fitted tyre set.
+    #[br(map(u8_to_usize))]
+    pub fitted_index: usize,
+}
+
 /// Extended motion data for player's car. Available as a:
 /// - part of [`F1PacketMotion`] in the 2022 format
 /// - standalone packet from the 2023 format onwards
@@ -416,7 +467,7 @@ pub struct F1PacketSessionHistory {
 #[derive(
     BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
 )]
-#[br(little, import(_packet_format: u16))]
+#[br(little, import(packet_format: u16))]
 pub struct F1PacketMotionEx {
     /// Positions of suspension for each wheel.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
@@ -458,6 +509,12 @@ pub struct F1PacketMotionEx {
     pub angular_acceleration_z: f32,
     /// Current front wheels angle in radians.
     pub front_wheels_angle: f32,
+    /// Vertical forces for each wheel.
+    /// See [`wheel_index`](mod@crate::constants::wheel_index)
+    /// for wheel order.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub wheel_vert_force: [f32; 4],
 }
 
 pub(crate) fn u8_to_bool(value: u8) -> bool {

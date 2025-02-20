@@ -1,5 +1,5 @@
 use super::{read_name, u8_to_bool};
-use crate::constants::{Nationality, TeamId, YourTelemetry};
+use crate::constants::{Nationality, Platform, YourTelemetry};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(
     BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize,
 )]
-#[br(little, import(_packet_format: u16))]
+#[br(little, import(packet_format: u16))]
 pub struct ParticipantsData {
     /// Whether the vehicle is controlled by AI
     #[br(map(u8_to_bool))]
@@ -18,7 +18,7 @@ pub struct ParticipantsData {
     /// Unique ID for network players
     pub network_id: u8,
     /// Team's ID
-    pub team_id: TeamId,
+    pub team_id: u8,
     /// Whether my team is being used
     #[br(map(u8_to_bool))]
     pub my_team: bool,
@@ -31,4 +31,12 @@ pub struct ParticipantsData {
     pub name: String,
     /// Player's UDP visibility setting
     pub your_telemetry: Option<YourTelemetry>,
+    /// Whether this player's "show online names" setting is on.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023), map(u8_to_bool))]
+    pub show_online_names: bool,
+    /// Player's platform.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub platform: Option<Platform>,
 }

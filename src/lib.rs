@@ -3,10 +3,11 @@ pub mod packets;
 
 use crate::constants::PacketId;
 use crate::packets::{
-    F1PacketCarDamage, F1PacketCarSetups, F1PacketCarStatus,
+    u8_to_usize, F1PacketCarDamage, F1PacketCarSetups, F1PacketCarStatus,
     F1PacketCarTelemetry, F1PacketEvent, F1PacketFinalClassification,
-    F1PacketLap, F1PacketLobbyInfo, F1PacketMotion, F1PacketParticipants,
-    F1PacketSession, F1PacketSessionHistory,
+    F1PacketLap, F1PacketLobbyInfo, F1PacketMotion, F1PacketMotionEx,
+    F1PacketParticipants, F1PacketSession, F1PacketSessionHistory,
+    F1PacketTyreSets,
 };
 
 use binrw::io::Cursor;
@@ -46,6 +47,10 @@ pub struct F1Packet {
 pub struct F1PacketHeader {
     /// Value of the "UDP Format" option in the game's telemetry settings.
     pub packet_format: u16,
+    /// Game year (last two digits)
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub game_year: u8,
     /// Game's major version - "X.00".
     pub game_major_version: u8,
     /// Game's minor version - "1.XX".
@@ -60,11 +65,18 @@ pub struct F1PacketHeader {
     pub session_time: f32,
     /// Identifier for the frame the data was retrieved on.
     pub frame_identifier: u32,
+    /// Overall identifier for the frame the data was retrieved on
+    /// (doesn't go back after flashbacks).
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub overall_frame_identifier: u32,
     /// Index of player's car in the array.
-    pub player_car_index: u8,
+    #[br(map(u8_to_usize))]
+    pub player_car_index: usize,
     /// Index of secondary player's car in the array in splitscreen mode.
     /// Set to 255 if not in splitscreen mode.
-    pub secondary_player_car_index: u8,
+    #[br(map(u8_to_usize))]
+    pub secondary_player_car_index: usize,
 }
 
 /// F1 game packet's body.
@@ -110,4 +122,12 @@ pub struct F1PacketBody {
     /// Session history data for a specific car.
     #[br(if(packet_id == PacketId::SessionHistory), args(packet_format))]
     pub session_history: Option<F1PacketSessionHistory>,
+    /// In-depth details about tyre sets assigned to a vehicle during the session.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_id == PacketId::TyreSets), args(packet_format))]
+    pub tyre_sets: Option<F1PacketTyreSets>,
+    /// Extended player car only motion data.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_id == PacketId::MotionEx), args(packet_format))]
+    pub motion_ex: Option<F1PacketMotionEx>,
 }

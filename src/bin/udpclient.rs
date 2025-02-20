@@ -8,7 +8,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     loop {
         let (msg_size, _) = socket.recv_from(&mut buf)?;
-        let raw_data = &buf[..msg_size];
-        let _parse_result = parse(raw_data)?;
+        let data = &buf[..msg_size];
+
+        parse(data)?;
     }
 }

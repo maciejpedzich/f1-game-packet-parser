@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 )]
 #[br(
     little,
-    import(_packet_format: u16),
+    import(packet_format: u16),
     assert(
         max_gears <= 9,
         "Car status entry has an invalid max number of gears: {}",
@@ -56,6 +56,14 @@ pub struct CarStatusData {
     pub tyres_age_laps: u8,
     /// Flag the driver is currently being shown.
     pub vehicle_fia_flag: VehicleFiaFlag,
+    /// Engine power output of ICE in watts.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub engine_power_ice: f32,
+    /// Engine power output of MGU-K in watts.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub engine_power_mguk: f32,
     /// ERS energy store in Joules.
     pub ers_store_energy: f32,
     /// ERS deployment mode.

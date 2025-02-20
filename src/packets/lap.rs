@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 )]
 #[br(
     little,
-    import(_packet_format: u16),
+    import(packet_format: u16),
     assert(
         sector <= 2,
         "Lap data entry has an invalid sector number: {}",
@@ -25,8 +25,24 @@ pub struct LapData {
     pub current_lap_time_ms: u32,
     /// Current sector 1 time in milliseconds.
     pub sector1_time_ms: u16,
+    /// Sector 1 whole minute part.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub sector1_time_minutes: u8,
     /// Current sector 2 time in milliseconds.
     pub sector2_time_ms: u16,
+    /// Sector 2 whole minute part.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub sector2_time_minutes: u8,
+    /// Time delta to car in front in milliseconds.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub delta_to_car_in_front_ms: u16,
+    /// Time delta to race leader in milliseconds.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub delta_to_race_leader_ms: u16,
     /// The distance the vehicle is around current lap in metres.
     /// It may be negative if the start/finish line hasn’t been crossed yet.
     pub lap_distance: f32,
@@ -52,7 +68,17 @@ pub struct LapData {
     /// Accumulated time penalties to be added in seconds.
     pub penalties: u8,
     /// Accumulated number of warnings issued.
+    /// Available only in the 2022 format.
+    #[br(if(packet_format == 2022))]
     pub warnings: u8,
+    /// Accumulated number of warnings issued.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub total_warnings: u8,
+    /// Accumulated number of corner cutting warnings issued.
+    /// Available from the 2023 format onwards.
+    #[br(if(packet_format >= 2023))]
+    pub corner_cutting_warnings: u8,
     /// Number of unserved drive through penalties left to serve.
     pub num_unserved_drive_through_pens: u8,
     /// Number of unserved stop-go penalties left to serve.

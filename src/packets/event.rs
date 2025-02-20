@@ -133,4 +133,15 @@ pub enum EventDataDetails {
         #[br(map(ButtonStatus::from_bits_truncate))]
         button_status: ButtonStatus,
     },
+    /// Sent when a car has overtaken another.
+    /// Available from the 2023 format onwards.
+    #[br(magic = b"OVTK")]
+    Overtake {
+        /// Index of the overtaking vehicle.
+        #[br(map(u8_to_usize))]
+        overtaking_vehicle_index: usize,
+        /// Index of the overtaken vehicle.
+        #[br(map(u8_to_usize))]
+        overtaken_vehicle_index: usize,
+    },
 }
