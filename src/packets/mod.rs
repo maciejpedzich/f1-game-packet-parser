@@ -45,6 +45,7 @@ use crate::packets::tyre_sets::{TyreSetData, NUM_TYRE_SETS};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 use std::string::FromUtf8Error;
 
 /// Physics data for all the cars being driven.
@@ -112,7 +113,8 @@ pub struct F1PacketSession {
     )]
     pub num_marshal_zones: usize,
     /// List of marshal zones.
-    /// Has a size equal to `num_marshal_zones`.
+    /// Should have a size equal to
+    /// [`num_marshal_zones`](field@crate::packets::F1PacketSession::num_marshal_zones).
     #[br(
         count(num_marshal_zones),
         args{ inner: (packet_format,) },
@@ -137,7 +139,8 @@ pub struct F1PacketSession {
     )]
     pub num_weather_forecast_samples: usize,
     /// List of up to weather forecast samples.
-    /// Has a size equal to `num_weather_forecast_samples`.
+    /// Should have a size equal to
+    /// [`num_weather_forecast_samples`](field@crate::packets::F1PacketSession::num_weather_forecast_samples).
     #[br(
         count(num_weather_forecast_samples),
         args{ inner: (packet_format,) },
@@ -336,6 +339,8 @@ pub struct F1PacketSession {
     )]
     pub num_sessions_in_weekend: usize,
     /// List of sessions that shows this weekend's structure.
+    /// Should have a size equal to
+    /// [`num_sessions_in_weekend`](field@crate::packets::F1PacketSession::num_sessions_in_weekend).
     /// Available from the 2024 format onwards.
     #[br(
         if(packet_format >= 2024),
@@ -402,7 +407,8 @@ pub struct F1PacketParticipants {
     #[br(map(u8_to_usize))]
     pub num_active_cars: usize,
     /// Data for all participants.
-    /// Should have a size equal to `num_cars`.
+    /// Should have a size equal to
+    /// [`num_active_cars`](field@crate::packets::F1PacketParticipants::num_active_cars).
     #[br(count(num_active_cars), args{ inner: (packet_format,) })]
     pub participants_data: Vec<ParticipantsData>,
 }
@@ -472,7 +478,8 @@ pub struct F1PacketFinalClassification {
     )]
     pub num_cars: usize,
     /// Final classification data for all cars.
-    /// Should have a size equal to `num_cars`.
+    /// Should have a size equal to
+    /// [`num_cars`](field@crate::packets::F1PacketFinalClassification::num_cars).
     #[br(count(num_cars), args{ inner: (packet_format,) })]
     pub final_classification_data: Vec<FinalClassificationData>,
 }
@@ -493,7 +500,8 @@ pub struct F1PacketLobbyInfo {
     )]
     pub num_players: usize,
     /// Lobby info data for all players.
-    /// Should have a size equal to `num_players`.
+    /// Should have a size equal to
+    /// [`num_players`](field@crate::packets::F1PacketLobbyInfo::num_players).
     #[br(count(num_players), args{ inner: (packet_format,) })]
     pub lobby_info_data: Vec<LobbyInfoData>,
 }
@@ -555,8 +563,8 @@ pub struct F1PacketSessionHistory {
     /// Number of the lap the best sector 3 time was achieved on.
     #[br(map(u8_to_usize))]
     pub best_sector3_lap_num: usize,
-    /// Lap history.
-    /// Should have a size equal to `num_laps`.
+    /// Lap history. Should have a size equal to
+    /// [`num_laps`](field@crate::packets::F1PacketSessionHistory::num_laps).
     #[br(
         count(num_laps),
         args{ inner: (packet_format,) },
@@ -564,7 +572,8 @@ pub struct F1PacketSessionHistory {
     )]
     pub lap_history_data: Vec<LapHistoryData>,
     /// Tyre stint history.
-    /// Should have a size equal to `num_tyre_stints`.
+    /// Should have a size equal to
+    /// [`num_tyre_stints`](field@crate::packets::F1PacketSessionHistory::num_tyre_stints).
     #[br(count(num_tyre_stints), args{ inner: (packet_format,) })]
     pub tyre_stint_history_data: Vec<TyreStintHistoryData>,
 }
@@ -707,19 +716,19 @@ pub struct F1PacketTimeTrial {
 }
 
 #[derive(Debug, PartialEq)]
-pub(crate) struct InvalidBoolValue(u8);
+pub(crate) struct InvalidBool(u8);
 
-impl core::fmt::Display for InvalidBoolValue {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+impl fmt::Display for InvalidBool {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Invalid bool value: {}", self.0)
     }
 }
 
-pub(crate) fn u8_to_bool(value: u8) -> Result<bool, InvalidBoolValue> {
+pub(crate) fn u8_to_bool(value: u8) -> Result<bool, InvalidBool> {
     match value {
         0 => Ok(false),
         1 => Ok(true),
-        _ => Err(InvalidBoolValue(value)),
+        _ => Err(InvalidBool(value)),
     }
 }
 
