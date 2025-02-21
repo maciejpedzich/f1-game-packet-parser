@@ -14,6 +14,8 @@ pub struct LobbyInfoData {
     #[br(try_map(u8_to_bool))]
     pub ai_controlled: bool,
     /// Team's ID.
+    /// See [`team_id`](mod@crate::constants::team_id)
+    /// for possible values.
     pub team_id: u8,
     /// Driver's nationality.
     pub nationality: Nationality,
