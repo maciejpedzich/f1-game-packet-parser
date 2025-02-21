@@ -33,16 +33,16 @@ pub struct F1Packet {
 /// F1 game packet's header.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    assert(
-        (2022..=2024).contains(&packet_format),
-        "Invalid or unsupported packet format: {}",
-        packet_format
-    )
-)]
+#[br(little)]
 pub struct F1PacketHeader {
     /// Value of the "UDP Format" option in the game's telemetry settings.
+    #[br(
+        assert(
+            (2022..=2024).contains(&packet_format),
+            "Invalid or unsupported packet format: {}",
+            packet_format
+        )
+    )]
     pub packet_format: u16,
     /// Game year (last two digits)
     /// Available from the 2023 format onwards.

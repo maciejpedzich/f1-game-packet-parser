@@ -4,6 +4,11 @@ use crate::constants::{ActualTyreCompound, LapValid, VisualTyreCompound};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+pub(super) const MAX_NUM_LAPS: usize = 100;
+pub(super) const LAP_HISTORY_RAW_SIZE: usize = 14;
+pub(super) const MAX_NUM_TYRE_STINTS: usize = 8;
+pub(super) const TYRE_STINT_RAW_SIZE: usize = 3;
+
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]

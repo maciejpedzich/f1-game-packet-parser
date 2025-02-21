@@ -13,9 +13,12 @@ pub mod session_history;
 pub mod tyre_sets;
 
 use crate::constants::{
-    BrakingAssist, DynamicRacingLine, DynamicRacingLineType, ForecastAccuracy, Formula,
-    GameMode, GearboxAssist, MfdPanelIndex, RuleSet, SafetyCarStatus, SessionLength,
-    SessionType, SpeedUnit, TemperatureUnit, TrackId, Weather, MAX_NUM_CARS,
+    BrakingAssist, CarDamage, CarDamageRate, Collisions, CornerCuttingStringency,
+    DynamicRacingLine, DynamicRacingLineType, FlashbackLimit, ForecastAccuracy,
+    FormationLapExperience, Formula, GameMode, GearboxAssist, LowFuelMode, MfdPanelIndex,
+    PitStopExperience, RaceStarts, RecoveryMode, RedFlags, RuleSet, SafetyCar,
+    SafetyCarExperience, SafetyCarStatus, SessionLength, SessionType, SpeedUnit,
+    SurfaceType, TemperatureUnit, TrackId, TyreTemperature, Weather, MAX_NUM_CARS,
 };
 use crate::packets::car_damage::CarDamageData;
 use crate::packets::car_setups::CarSetupData;
@@ -27,9 +30,16 @@ use crate::packets::lap::LapData;
 use crate::packets::lobby::LobbyInfoData;
 use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
-use crate::packets::session::{MarshalZone, WeatherForecastSample};
-use crate::packets::session_history::{LapHistoryData, TyreStintHistoryData};
-use crate::packets::tyre_sets::TyreSetData;
+use crate::packets::session::{
+    check_num_forecast_samples, get_forecast_samples_padding, MarshalZone,
+    WeatherForecastSample, MARSHAL_ZONE_RAW_SIZE, MAX_AI_DIFFICULTY,
+    MAX_NUM_MARSHAL_ZONES, MAX_NUM_SESSIONS,
+};
+use crate::packets::session_history::{
+    LapHistoryData, TyreStintHistoryData, LAP_HISTORY_RAW_SIZE, MAX_NUM_LAPS,
+    MAX_NUM_TYRE_STINTS,
+};
+use crate::packets::tyre_sets::{TyreSetData, NUM_TYRE_SETS};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
@@ -53,25 +63,7 @@ pub struct F1PacketMotion {
 #[allow(clippy::struct_excessive_bools)]
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        num_marshal_zones <= 21,
-        "Session packet has an invalid number of marshal zones: {}",
-        num_marshal_zones
-    ),
-    assert(
-        num_weather_forecast_samples <= 56,
-        "Session packet has an invalid number of weather forecast samples: {}",
-        num_weather_forecast_samples
-    ),
-    assert(
-        ai_difficulty <= 110,
-        "Session packet has an invalid AI difficulty value: {}",
-        ai_difficulty
-    ),
-)]
+#[br(little, import(packet_format: u16))]
 pub struct F1PacketSession {
     /// Current weather.
     pub weather: Weather,
@@ -107,31 +99,61 @@ pub struct F1PacketSession {
     /// Whether SLI Pro support is active.
     #[br(try_map(u8_to_bool))]
     pub sli_pro_native_support: bool,
-    /// Number of marshal zones to follow (no greater than 21).
-    #[br(map(u8_to_usize))]
+    /// Number of marshal zones to follow.
+    #[br(
+        map(u8_to_usize),
+        assert(
+            num_marshal_zones <= MAX_NUM_MARSHAL_ZONES,
+            "Session packet has an invalid number of marshal zones: {}",
+            num_marshal_zones
+        )
+    )]
     pub num_marshal_zones: usize,
     /// List of marshal zones.
-    /// Has a size of 21 regardless of the
-    /// [`num_marshal_zones`](field@F1PacketSession::num_marshal_zones) value.
-    #[br(count(21), args{ inner: (packet_format,) })]
+    /// Has a size equal to `num_marshal_zones`.
+    #[br(
+        count(num_marshal_zones),
+        args{ inner: (packet_format,) },
+        pad_after(
+            (MAX_NUM_MARSHAL_ZONES - num_marshal_zones) * MARSHAL_ZONE_RAW_SIZE
+        )
+    )]
     pub marshal_zones: Vec<MarshalZone>,
     /// Safety car deployment status.
     pub safety_car_status: SafetyCarStatus,
     /// Whether this game is online.
     #[br(try_map(u8_to_bool))]
     pub network_game: bool,
-    /// Number of weather samples to follow (no greater than 56).
-    #[br(map(u8_to_usize))]
+    /// Number of weather samples to follow.
+    #[br(
+        map(u8_to_usize),
+        assert(
+            check_num_forecast_samples(packet_format, num_weather_forecast_samples),
+            "Session packet has an invalid number of weather forecast samples: {}",
+            num_weather_forecast_samples
+        )
+    )]
     pub num_weather_forecast_samples: usize,
     /// List of up to weather forecast samples.
-    /// Has a size of 56 regardless of the
-    /// [`num_weather_forecast_samples`](field@F1PacketSession::num_weather_forecast_samples)
-    /// value.
-    #[br(count(56), args{ inner: (packet_format,) })]
+    /// Has a size equal to `num_weather_forecast_samples`.
+    #[br(
+        count(num_weather_forecast_samples),
+        args{ inner: (packet_format,) },
+        pad_after(
+            get_forecast_samples_padding(packet_format, num_weather_forecast_samples)
+        )
+    )]
     pub weather_forecast_samples: Vec<WeatherForecastSample>,
     /// Weather forecast accuracy.
     pub forecast_accuracy: ForecastAccuracy,
     /// AI difficulty rating in range `(0..=110)`.
+    #[br(
+        assert(
+            ai_difficulty <= MAX_AI_DIFFICULTY,
+            "Session packet has an invalid AI difficulty value: {}",
+            ai_difficulty
+        )
+    )]
     pub ai_difficulty: u8,
     /// Identifier for season - persists across saves.
     pub season_link_identifier: u32,
@@ -206,8 +228,127 @@ pub struct F1PacketSession {
     pub num_red_flag_periods: u8,
     /// Whether equal car performance is enabled.
     /// Available from the 2024 format onwards.
-    #[br(try_map(u8_to_bool))]
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
     pub equal_car_performance: bool,
+    /// Recovery mode assist.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub recovery_mode: Option<RecoveryMode>,
+    /// Flashback limit type.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub flashback_limit: Option<FlashbackLimit>,
+    /// Surface simulation type.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub surface_type: Option<SurfaceType>,
+    /// Low fuel driving difficulty.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub low_fuel_mode: Option<LowFuelMode>,
+    /// Race starts assist.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub race_starts: Option<RaceStarts>,
+    /// Tyre temperature simulation type.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub tyre_temperature: Option<TyreTemperature>,
+    /// Whether the pit lane tyre simulation
+    /// (cold tyres and low grip right after a stop) is enabled.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub pit_lane_tyre_sim: bool,
+    /// Car damage simulation type.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub car_damage: Option<CarDamage>,
+    /// Car damage rate.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub car_damage_rate: Option<CarDamageRate>,
+    /// Collision simulation type.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub collisions: Option<Collisions>,
+    /// Whether collisions are disabled only for lap 1.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub collisions_off_for_first_lap_only: bool,
+    /// Whether unsafe pit release is disabled in a multiplayer game.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub mp_unsafe_pit_release_disabled: bool,
+    /// Whether collisions get disabled for griefing in a multiplayer game.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub mp_collisions_off_for_griefing: bool,
+    /// Corner cutting stringency.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub corner_cutting_stringency: Option<CornerCuttingStringency>,
+    /// Whether parc fermé rules are enabled.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub parc_ferme_rules: bool,
+    /// Pit stop experience.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub pit_stop_experience: Option<PitStopExperience>,
+    /// Safety car intensity.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub safety_car: Option<SafetyCar>,
+    /// Safety car experience.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub safety_car_experience: Option<SafetyCarExperience>,
+    /// Whether formation lap is enabled.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub formation_lap: bool,
+    /// Formation lap experience.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub formation_lap_experience: Option<FormationLapExperience>,
+    /// Red flag intensity.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub red_flags: Option<RedFlags>,
+    /// Whether this single player game affects the license level.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub affects_license_level_solo: bool,
+    /// Whether this multiplayer game affects the license level.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
+    pub affects_license_level_mp: bool,
+    /// Number of sessions in the ongoing race weekend.
+    #[br(
+        map(u8_to_usize),
+        assert(
+            num_sessions_in_weekend <= MAX_NUM_SESSIONS,
+            "Session packet has an invalid number of sessions in a weekend: {}",
+            num_sessions_in_weekend
+        )
+    )]
+    pub num_sessions_in_weekend: usize,
+    /// List of sessions that shows this weekend's structure.
+    /// Available from the 2024 format onwards.
+    #[br(
+        if(packet_format >= 2024),
+        count(num_sessions_in_weekend),
+        pad_after(MAX_NUM_SESSIONS - num_sessions_in_weekend)
+    )]
+    pub weekend_structure: Vec<SessionType>,
+    /// Distance (in metres) around the track where sector 2 starts.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub sector2_lap_distance_start: f32,
+    /// Distance (in metres) around the track where sector 3 starts.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub sector3_lap_distance_start: f32,
 }
 
 /// Data about all the lap times of cars in the session.
@@ -254,14 +395,13 @@ pub struct F1PacketEvent {
     )
 )]
 pub struct F1PacketParticipants {
-    /// Number of active cars in the data (no greater than 22)
+    /// Number of active cars in the session.
     #[br(map(u8_to_usize))]
     pub num_cars: usize,
     /// Data for all participants.
-    /// Should have a size equal to
-    /// [`num_cars`](field@F1PacketParticipants::num_cars).
+    /// Should have a size equal to `num_cars`.
     #[br(count(num_cars), args{ inner: (packet_format,) })]
-    pub participants: Vec<ParticipantsData>,
+    pub participants_data: Vec<ParticipantsData>,
 }
 
 /// Car setups for all cars in the race.
@@ -272,33 +412,30 @@ pub struct F1PacketParticipants {
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarSetups {
     /// Setup data for all cars on track.
-    /// Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
-    pub car_setups: Vec<CarSetupData>,
+    pub car_setups_data: Vec<CarSetupData>,
 }
 
 /// Telemetry (such as speed, DRS, throttle application, etc.)
 /// for all cars in the race.
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        (-1..=8).contains(&suggested_gear),
-        "Car telemetry entry has an invalid suggested gear value: {}",
-        suggested_gear
-    ),
-)]
+#[br(little, import(packet_format: u16))]
 pub struct F1PacketCarTelemetry {
     /// Telemetry data for all cars on track.
-    /// Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_telemetry_data: Vec<CarTelemetryData>,
     /// Index of currently open MFD panel.
     pub mfd_panel_index: MfdPanelIndex,
-    /// See [`mfd_panel_index`](field@F1PacketCarTelemetry::mfd_panel_index).
+    /// See `mfd_panel_index`.
     pub mfd_panel_index_secondary_player: MfdPanelIndex,
     /// Suggested gear (0 if no gear suggested).
+    #[br(
+        assert(
+            (-1..=8).contains(&suggested_gear),
+            "Car telemetry entry has an invalid suggested gear value: {}",
+            suggested_gear
+        )
+    )]
     pub suggested_gear: i8,
 }
 
@@ -307,7 +444,7 @@ pub struct F1PacketCarTelemetry {
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarStatus {
-    /// Status data for all cars. Should have a size of 22.
+    /// Status data for all cars.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_status_data: Vec<CarStatusData>,
 }
@@ -315,22 +452,20 @@ pub struct F1PacketCarStatus {
 /// Final classification confirmation at the end of a race.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        num_cars <= MAX_NUM_CARS,
-        "Final classification packet has an invalid number of cars: {}",
-        num_cars
-    )
-)]
+#[br(little, import(packet_format: u16))]
 pub struct F1PacketFinalClassification {
     /// Number of cars in the final classification (no greater than 22).
-    #[br(map(u8_to_usize))]
+    #[br(
+        map(u8_to_usize),
+        assert(
+            num_cars <= MAX_NUM_CARS,
+            "Final classification packet has an invalid number of cars: {}",
+            num_cars
+        )
+    )]
     pub num_cars: usize,
     /// Final classification data for all cars.
-    /// Should have a size equal to
-    /// [`num_cars`](field@F1PacketFinalClassification::num_cars).
+    /// Should have a size equal to `num_cars`.
     #[br(count(num_cars), args{ inner: (packet_format,) })]
     pub final_classification_data: Vec<FinalClassificationData>,
 }
@@ -338,22 +473,20 @@ pub struct F1PacketFinalClassification {
 /// Packet detailing all the players that are currently in a multiplayer lobby.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        num_players <= MAX_NUM_CARS,
-        "Lobby packet has an invalid number of players: {}",
-        num_players
-    )
-)]
+#[br(little, import(packet_format: u16))]
 pub struct F1PacketLobbyInfo {
-    /// Number of players in the lobby (no greater than 22).
-    #[br(map(u8_to_usize))]
+    /// Number of players in the lobby.
+    #[br(
+        map(u8_to_usize),
+        assert(
+            num_players <= MAX_NUM_CARS,
+            "Lobby packet has an invalid number of players: {}",
+            num_players
+        )
+    )]
     pub num_players: usize,
     /// Lobby info data for all players.
-    /// Should have a size equal to
-    /// [`num_players`](field@F1PacketLobbyInfo::num_players).
+    /// Should have a size equal to `num_players`.
     #[br(count(num_players), args{ inner: (packet_format,) })]
     pub lobby_info_data: Vec<LobbyInfoData>,
 }
@@ -363,7 +496,7 @@ pub struct F1PacketLobbyInfo {
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarDamage {
-    /// Car damage data. Should have a size of 22.
+    /// Car damage data.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_damage_data: Vec<CarDamageData>,
 }
@@ -371,52 +504,61 @@ pub struct F1PacketCarDamage {
 /// Packet detailing lap and tyre data history for a given driver in the session
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        vehicle_index < MAX_NUM_CARS,
-        "Session history packet has an invalid vehicle index: {}",
-        vehicle_index
-    ),
-    assert(
-        num_laps <= 100,
-        "Session history packet has an invalid number of laps: {}",
-        num_laps
-    ),
-    assert(
-        num_tyre_stints <= 8,
-        "Session history packet has an invalid number of tyre stints: {}",
-        num_tyre_stints
-    )
-)]
+#[br(little, import(packet_format: u16))]
 pub struct F1PacketSessionHistory {
-    /// Index of the car this packet refers to
-    #[br(map(u8_to_usize))]
+    /// Index of the car this packet refers to.
+    #[br(
+        map(u8_to_usize),
+        assert(
+            vehicle_index < MAX_NUM_CARS,
+            "Session history packet has an invalid vehicle index: {}",
+            vehicle_index
+        )
+    )]
     pub vehicle_index: usize,
-    /// Number of laps in the data (including the current one)
-    #[br(map(u8_to_usize))]
+    /// Number of laps in the data (including the current one).
+    #[br(
+        map(u8_to_usize),
+        assert(
+            num_laps <= MAX_NUM_LAPS,
+            "Session history packet has an invalid number of laps: {}",
+            num_laps
+        ),
+    )]
     pub num_laps: usize,
-    /// Number of tyre stints in the data (including the current one)
-    #[br(map(u8_to_usize))]
+    /// Number of tyre stints in the data (including the current one).
+    #[br(
+        map(u8_to_usize),
+        assert(
+            num_tyre_stints <= MAX_NUM_TYRE_STINTS,
+            "Session history packet has an invalid number of tyre stints: {}",
+            num_tyre_stints
+        )
+    )]
     pub num_tyre_stints: usize,
-    /// Number of the lap the best lap time was achieved on
+    /// Number of the lap the best lap time was achieved on.
     #[br(map(u8_to_usize))]
     pub best_lap_time_lap_num: usize,
-    /// Number of the lap the best sector 1 time was achieved on
+    /// Number of the lap the best sector 1 time was achieved on.
     #[br(map(u8_to_usize))]
     pub best_sector1_lap_num: usize,
-    /// Number of the lap the best sector 2 time was achieved on
+    /// Number of the lap the best sector 2 time was achieved on.
     #[br(map(u8_to_usize))]
     pub best_sector2_lap_num: usize,
-    /// Number of the lap the best sector 3 time was achieved on
+    /// Number of the lap the best sector 3 time was achieved on.
     #[br(map(u8_to_usize))]
     pub best_sector3_lap_num: usize,
-    /// Up to 100 laps
-    #[br(count(100), args{ inner: (packet_format,) })]
+    /// Lap history.
+    /// Should have a size equal to `num_laps`.
+    #[br(
+        count(num_laps),
+        args{ inner: (packet_format,) },
+        pad_after((MAX_NUM_LAPS - num_laps) * LAP_HISTORY_RAW_SIZE)
+    )]
     pub lap_history_data: Vec<LapHistoryData>,
-    /// Up to 8 tyre stints
-    #[br(count(8), args{ inner: (packet_format,) })]
+    /// Tyre stint history.
+    /// Should have a size equal to `num_tyre_stints`.
+    #[br(count(num_tyre_stints), args{ inner: (packet_format,) })]
     pub tyre_stint_history_data: Vec<TyreStintHistoryData>,
 }
 
@@ -430,10 +572,17 @@ pub struct F1PacketTyreSets {
     #[br(map(u8_to_usize))]
     pub vehicle_index: usize,
     /// 13 dry + 7 wet tyre sets.
-    #[br(count(20), args{ inner: (packet_format,) })]
+    #[br(count(NUM_TYRE_SETS), args{ inner: (packet_format,) })]
     pub tyre_set_data: Vec<TyreSetData>,
     /// Index of fitted tyre set.
-    #[br(map(u8_to_usize))]
+    #[br(
+        map(u8_to_usize),
+        assert(
+            fitted_index < NUM_TYRE_SETS,
+            "Tyre sets packet has an invalid fitted set index: {}",
+            fitted_index
+        )
+    )]
     pub fitted_index: usize,
 }
 

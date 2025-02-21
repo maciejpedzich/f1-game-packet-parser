@@ -4,6 +4,8 @@ use crate::constants::{ActualTyreCompound, SessionType, VisualTyreCompound};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+pub(super) const NUM_TYRE_SETS: usize = 20;
+
 #[non_exhaustive]
 #[derive(
     BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,

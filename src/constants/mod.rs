@@ -583,6 +583,9 @@ pub enum Nationality {
     Welsh = 85,
     Barbadian = 86,
     Vietnamese = 87,
+    Algerian = 88,
+    Bosnian = 89,
+    Filipino = 90,
 }
 
 #[non_exhaustive]
@@ -846,4 +849,155 @@ pub enum RecoveryMode {
     None = 0,
     Flashbacks = 1,
     AutoRecovery = 2,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum FlashbackLimit {
+    Low = 0,
+    Medium = 1,
+    High = 2,
+    Unlimited = 3,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum SurfaceType {
+    Simplified = 0,
+    Realistic = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum LowFuelMode {
+    Easy = 0,
+    Hard = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum RaceStarts {
+    Manual = 0,
+    Assisted = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum TyreTemperature {
+    SurfaceOnly = 0,
+    SurfaceAndCarcass = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum CarDamage {
+    Off = 0,
+    Reduced = 1,
+    Standard = 2,
+    Simulation = 3,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum CarDamageRate {
+    Reduced = 0,
+    Standard = 1,
+    Simulation = 2,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum Collisions {
+    Off = 0,
+    PlayerToPlayerOff = 1,
+    On = 2,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum CornerCuttingStringency {
+    Regular = 0,
+    Strict = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum PitStopExperience {
+    Automatic = 0,
+    Broadcast = 1,
+    Immersive = 2,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum SafetyCar {
+    Off = 0,
+    Reduced = 1,
+    Standard = 2,
+    Increased = 3,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum SafetyCarExperience {
+    Broadcast = 0,
+    Immersive = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum FormationLapExperience {
+    Broadcast = 0,
+    Immersive = 1,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum RedFlags {
+    Off = 0,
+    Reduced = 1,
+    Standard = 2,
+    Increased = 3,
 }
