@@ -1,4 +1,4 @@
-use crate::constants::{MarshalZoneFlag, SessionType, TemperatureChange, Weather};
+use crate::constants::{MarshalZoneFlag, TemperatureChange, Weather};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
@@ -43,7 +43,9 @@ pub struct MarshalZone {
 )]
 pub struct WeatherForecastSample {
     /// Session's type.
-    pub session_type: SessionType,
+    /// See [`session_type`](mod@crate::constants::session_type)
+    /// for possible values.
+    pub session_type: u8,
     /// Time in minutes the forecast is for.
     pub time_offset: u8,
     /// Forecasted weather.

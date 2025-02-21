@@ -18,7 +18,7 @@ use crate::constants::{
     DynamicRacingLine, DynamicRacingLineType, FlashbackLimit, ForecastAccuracy,
     FormationLapExperience, Formula, GameMode, GearboxAssist, LowFuelMode, MfdPanelIndex,
     PitStopExperience, RaceStarts, RecoveryMode, RedFlags, RuleSet, SafetyCar,
-    SafetyCarExperience, SafetyCarStatus, SessionLength, SessionType, SpeedUnit,
+    SafetyCarExperience, SafetyCarStatus, SessionLength, SpeedUnit,
     SurfaceType, TemperatureUnit, TrackId, TyreTemperature, Weather, MAX_NUM_CARS,
 };
 use crate::packets::car_damage::CarDamageData;
@@ -79,7 +79,9 @@ pub struct F1PacketSession {
     /// Track's length in metres.
     pub track_length: u16,
     /// Session's type.
-    pub session_type: SessionType,
+    /// See [`session_type`](mod@crate::constants::session_type)
+    /// for possible values.
+    pub session_type: u8,
     /// Unique identifier of the track.
     pub track_id: TrackId,
     /// Formula of cars being raced.
@@ -347,7 +349,7 @@ pub struct F1PacketSession {
         count(num_sessions_in_weekend),
         pad_after(MAX_NUM_SESSIONS - num_sessions_in_weekend)
     )]
-    pub weekend_structure: Vec<SessionType>,
+    pub weekend_structure: Vec<u8>,
     /// Distance (in metres) around the track where sector 2 starts.
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024))]
@@ -716,19 +718,19 @@ pub struct F1PacketTimeTrial {
 }
 
 #[derive(Debug, PartialEq)]
-pub(crate) struct InvalidBool(u8);
+pub(crate) struct InvalidBoolValue(u8);
 
-impl fmt::Display for InvalidBool {
+impl fmt::Display for InvalidBoolValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Invalid bool value: {}", self.0)
     }
 }
 
-pub(crate) fn u8_to_bool(value: u8) -> Result<bool, InvalidBool> {
+pub(crate) fn u8_to_bool(value: u8) -> Result<bool, InvalidBoolValue> {
     match value {
         0 => Ok(false),
         1 => Ok(true),
-        _ => Err(InvalidBool(value)),
+        _ => Err(InvalidBoolValue(value)),
     }
 }
 

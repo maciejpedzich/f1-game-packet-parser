@@ -1,5 +1,5 @@
 use super::u8_to_bool;
-use crate::constants::{ActualTyreCompound, SessionType, VisualTyreCompound};
+use crate::constants::{ActualTyreCompound, VisualTyreCompound};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
@@ -30,7 +30,9 @@ pub struct TyreSetData {
     #[br(try_map(u8_to_bool))]
     pub available: bool,
     /// Recommended session for this tyre set.
-    pub recommended_session: SessionType,
+    /// See [`session_type`](mod@crate::constants::session_type)
+    /// for possible values.
+    pub recommended_session: u8,
     /// Laps left in this set.
     pub life_span: u8,
     /// Max number of laps recommended for this compound.

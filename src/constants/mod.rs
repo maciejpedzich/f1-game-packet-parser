@@ -2,6 +2,7 @@ pub mod driver_id;
 pub mod team_id;
 /// The wheel order is: `REAR_LEFT`, `REAR_RIGHT`, `FRONT_LEFT`, `FRONT_RIGHT`.
 pub mod wheel_index;
+pub mod session_type;
 
 use binrw::BinRead;
 use bitflags::bitflags;
@@ -88,38 +89,6 @@ pub enum Weather {
     LightRain = 3,
     HeavyRain = 4,
     Storm = 5,
-}
-
-#[non_exhaustive]
-#[derive(
-    BinRead,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Copy,
-    Clone,
-    Debug,
-    Hash,
-    Serialize,
-    Deserialize,
-)]
-#[br(little, repr(u8))]
-pub enum SessionType {
-    Unknown = 0,
-    Practice1 = 1,
-    Practice2 = 2,
-    Practice3 = 3,
-    ShortPractice = 4,
-    Qualifying1 = 5,
-    Qualifying2 = 6,
-    Qualifying3 = 7,
-    ShortQualifying = 8,
-    OneShotQualifying = 9,
-    Race = 10,
-    Race2 = 11,
-    Race3 = 12,
-    TimeTrial = 13,
 }
 
 #[non_exhaustive]
