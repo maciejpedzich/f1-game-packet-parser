@@ -11,7 +11,17 @@ pub(crate) const MAX_NUM_CARS: usize = 22;
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum PacketId {
@@ -34,7 +44,17 @@ pub enum PacketId {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(i8))]
 pub enum MarshalZoneFlag {
@@ -48,7 +68,17 @@ pub enum MarshalZoneFlag {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum Weather {
@@ -62,7 +92,17 @@ pub enum Weather {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SessionType {
@@ -84,7 +124,17 @@ pub enum SessionType {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(i8))]
 pub enum TemperatureChange {
@@ -95,7 +145,17 @@ pub enum TemperatureChange {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(i8))]
 pub enum TrackId {
@@ -137,7 +197,17 @@ pub enum TrackId {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum Formula {
@@ -155,7 +225,17 @@ pub enum Formula {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SafetyCarStatus {
@@ -167,7 +247,17 @@ pub enum SafetyCarStatus {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum ForecastAccuracy {
@@ -177,7 +267,17 @@ pub enum ForecastAccuracy {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum BrakingAssist {
@@ -189,7 +289,17 @@ pub enum BrakingAssist {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum GearboxAssist {
@@ -201,7 +311,17 @@ pub enum GearboxAssist {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum DynamicRacingLine {
@@ -212,7 +332,17 @@ pub enum DynamicRacingLine {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum DynamicRacingLineType {
@@ -222,7 +352,17 @@ pub enum DynamicRacingLineType {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum GameMode {
@@ -240,15 +380,29 @@ pub enum GameMode {
     OnlineWeeklyEvent = 15,
     BrakingPoint2023 = 17,
     Career2022 = 19,
-    Career2022Online = 20,
+    OnlineCareer2022 = 20,
     Career2023 = 21,
-    Career2023Online = 22,
+    OnlineCareer2023 = 22,
+    DriverCareer2024 = 23,
+    OnlineCareer2024 = 24,
+    MyTeamCareer2024 = 25,
+    CuratedCareer2024 = 26,
     Benchmark = 127,
 }
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum RuleSet {
@@ -265,7 +419,17 @@ pub enum RuleSet {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SessionLength {
@@ -280,7 +444,17 @@ pub enum SessionLength {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum PitStatus {
@@ -291,7 +465,17 @@ pub enum PitStatus {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum DriverStatus {
@@ -304,7 +488,17 @@ pub enum DriverStatus {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum ResultStatus {
@@ -320,7 +514,17 @@ pub enum ResultStatus {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum PenaltyType {
@@ -346,7 +550,17 @@ pub enum PenaltyType {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum InfringementType {
@@ -491,7 +705,17 @@ bitflags! {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum Nationality {
@@ -590,7 +814,17 @@ pub enum Nationality {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum YourTelemetry {
@@ -600,7 +834,17 @@ pub enum YourTelemetry {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum Surface {
@@ -660,7 +904,17 @@ bitflags! {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum MfdPanelIndex {
@@ -674,7 +928,17 @@ pub enum MfdPanelIndex {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum TractionControl {
@@ -685,7 +949,17 @@ pub enum TractionControl {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum FuelMix {
@@ -697,7 +971,17 @@ pub enum FuelMix {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum ErsDeployMode {
@@ -709,7 +993,17 @@ pub enum ErsDeployMode {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(i8))]
 pub enum VehicleFiaFlag {
@@ -723,7 +1017,17 @@ pub enum VehicleFiaFlag {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(i8))]
 pub enum DrsAllowed {
@@ -734,7 +1038,17 @@ pub enum DrsAllowed {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum ActualTyreCompound {
@@ -758,7 +1072,17 @@ pub enum ActualTyreCompound {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum VisualTyreCompound {
@@ -779,7 +1103,17 @@ pub enum VisualTyreCompound {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum ReadyStatus {
@@ -808,7 +1142,17 @@ bitflags! {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SpeedUnit {
@@ -818,7 +1162,17 @@ pub enum SpeedUnit {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum TemperatureUnit {
@@ -828,7 +1182,17 @@ pub enum TemperatureUnit {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum Platform {
@@ -842,7 +1206,17 @@ pub enum Platform {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum RecoveryMode {
@@ -853,7 +1227,17 @@ pub enum RecoveryMode {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum FlashbackLimit {
@@ -865,7 +1249,17 @@ pub enum FlashbackLimit {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SurfaceType {
@@ -875,7 +1269,17 @@ pub enum SurfaceType {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum LowFuelMode {
@@ -885,7 +1289,17 @@ pub enum LowFuelMode {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum RaceStarts {
@@ -895,7 +1309,17 @@ pub enum RaceStarts {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum TyreTemperature {
@@ -905,7 +1329,17 @@ pub enum TyreTemperature {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum CarDamage {
@@ -917,7 +1351,17 @@ pub enum CarDamage {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum CarDamageRate {
@@ -928,7 +1372,17 @@ pub enum CarDamageRate {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum Collisions {
@@ -939,7 +1393,17 @@ pub enum Collisions {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum CornerCuttingStringency {
@@ -949,7 +1413,17 @@ pub enum CornerCuttingStringency {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum PitStopExperience {
@@ -960,7 +1434,17 @@ pub enum PitStopExperience {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SafetyCar {
@@ -972,7 +1456,17 @@ pub enum SafetyCar {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SafetyCarExperience {
@@ -982,7 +1476,17 @@ pub enum SafetyCarExperience {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum FormationLapExperience {
@@ -992,7 +1496,17 @@ pub enum FormationLapExperience {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum RedFlags {
@@ -1004,7 +1518,17 @@ pub enum RedFlags {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SafetyCarType {
@@ -1016,7 +1540,17 @@ pub enum SafetyCarType {
 
 #[non_exhaustive]
 #[derive(
-    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
 )]
 #[br(little, repr(u8))]
 pub enum SafetyCarEventType {
