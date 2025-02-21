@@ -1001,3 +1001,27 @@ pub enum RedFlags {
     Standard = 2,
     Increased = 3,
 }
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum SafetyCarType {
+    None = 0,
+    Full = 1,
+    Virtual = 2,
+    FormationLap = 3,
+}
+
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum SafetyCarEventType {
+    Deployed = 0,
+    Returning = 1,
+    Returned = 2,
+    ResumeRace = 3,
+}

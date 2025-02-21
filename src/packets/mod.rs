@@ -10,6 +10,7 @@ pub mod motion;
 pub mod participants;
 pub mod session;
 pub mod session_history;
+pub mod time_trial;
 pub mod tyre_sets;
 
 use crate::constants::{
@@ -39,6 +40,7 @@ use crate::packets::session_history::{
     LapHistoryData, TyreStintHistoryData, LAP_HISTORY_RAW_SIZE, MAX_NUM_LAPS,
     MAX_NUM_TYRE_STINTS,
 };
+use crate::packets::time_trial::TimeTrialDataSet;
 use crate::packets::tyre_sets::{TyreSetData, NUM_TYRE_SETS};
 
 use binrw::BinRead;
@@ -54,7 +56,7 @@ pub struct F1PacketMotion {
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_motion_data: Vec<CarMotionData>,
     /// Extra player car only motion data.
-    /// Only in the 2022 format.
+    /// Available only in the 2022 format.
     #[br(if(packet_format == 2022))]
     pub motion_ex_data: Option<F1PacketMotionEx>,
 }
@@ -370,7 +372,7 @@ pub struct F1PacketLap {
 /// Various notable events that happen during a session.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(little, import(_packet_format: u16))]
+#[br(little, import(packet_format: u16))]
 pub struct F1PacketEvent {
     /// 4-letter event code.
     #[br(
@@ -379,6 +381,7 @@ pub struct F1PacketEvent {
     )]
     pub event_string_code: String,
     /// Extra data for this event.
+    #[br(args(packet_format))]
     pub event_details: EventDataDetails,
 }
 
@@ -389,18 +392,18 @@ pub struct F1PacketEvent {
     little,
     import(packet_format: u16),
     assert(
-        num_cars <= MAX_NUM_CARS,
+        num_active_cars <= MAX_NUM_CARS,
         "Participants packet has an invalid number of cars: {}",
-        num_cars
+        num_active_cars
     )
 )]
 pub struct F1PacketParticipants {
     /// Number of active cars in the session.
     #[br(map(u8_to_usize))]
-    pub num_cars: usize,
+    pub num_active_cars: usize,
     /// Data for all participants.
     /// Should have a size equal to `num_cars`.
-    #[br(count(num_cars), args{ inner: (packet_format,) })]
+    #[br(count(num_active_cars), args{ inner: (packet_format,) })]
     pub participants_data: Vec<ParticipantsData>,
 }
 
@@ -414,6 +417,10 @@ pub struct F1PacketCarSetups {
     /// Setup data for all cars on track.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
     pub car_setups_data: Vec<CarSetupData>,
+    /// Value of front wing after next pit stop - player only.
+    /// Available from the 2024 format onwards
+    #[br(if(packet_format >= 2024))]
+    pub next_front_wing_value: f32,
 }
 
 /// Telemetry (such as speed, DRS, throttle application, etc.)
@@ -454,7 +461,7 @@ pub struct F1PacketCarStatus {
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketFinalClassification {
-    /// Number of cars in the final classification (no greater than 22).
+    /// Number of cars in the final classification.
     #[br(
         map(u8_to_usize),
         assert(
@@ -597,22 +604,44 @@ pub struct F1PacketMotionEx {
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub suspension_position: [f32; 4],
-    /// Velocities of suspension.
+    /// Velocity values of suspension for each wheel.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub suspension_velocity: [f32; 4],
-    /// Accelerations of suspension in the following order:
+    /// Acceleration values of suspension for each wheel.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub suspension_acceleration: [f32; 4],
-    /// Speed of each wheel in the following order:
+    /// Speed of each wheel.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
     pub wheel_speed: [f32; 4],
-    /// Slip ratio of each wheel in the following order:
+    /// Slip ratio for each wheel.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
-    pub wheel_slip: [f32; 4],
+    pub wheel_slip_ratio: [f32; 4],
+    /// Slip angles for each wheel.
+    /// See [`wheel_index`](mod@crate::constants::wheel_index)
+    /// for wheel order.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub wheel_slip_angle: [f32; 4],
+    /// Lateral forces for each wheel.
+    /// See [`wheel_index`](mod@crate::constants::wheel_index)
+    /// for wheel order.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub wheel_lat_force: [f32; 4],
+    /// Longitudinal forces for each wheel.
+    /// See [`wheel_index`](mod@crate::constants::wheel_index)
+    /// for wheel order.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub wheel_long_force: [f32; 4],
+    /// Height of centre of gravity above ground.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub height_of_cog_above_ground: f32,
     /// X velocity in local space.
     pub local_velocity_x: f32,
     /// Y velocity in local space.
@@ -639,6 +668,42 @@ pub struct F1PacketMotionEx {
     /// Available from the 2023 format onwards.
     #[br(if(packet_format >= 2023))]
     pub wheel_vert_force: [f32; 4],
+    /// Front plank edge height above road surface.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub front_aero_height: f32,
+    /// Rear plank edge height above road surface.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub rear_aero_height: f32,
+    /// Roll angle of the front suspension.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub front_roll_angle: f32,
+    /// Roll angle of the rear suspension.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub rear_roll_angle: f32,
+    /// Yaw angle of the chassis relative to the direction of motion - radians.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub chassis_yaw: f32,
+}
+
+/// Extra information that's only relevant to time trial game mode.
+/// Available from the 2024 format onwards.
+#[non_exhaustive]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Clone, Debug, Serialize, Deserialize,
+)]
+#[br(little, import(_packet_format: u16))]
+pub struct F1PacketTimeTrial {
+    /// Data set of player's best run this session.
+    pub player_session_best_data_set: TimeTrialDataSet,
+    /// Data set of player's personal best run.
+    pub personal_best_data_set: TimeTrialDataSet,
+    /// Data set of rival's best run.
+    pub rival_data_set: TimeTrialDataSet,
 }
 
 #[derive(Debug, PartialEq)]

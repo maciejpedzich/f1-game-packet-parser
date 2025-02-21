@@ -21,26 +21,34 @@ pub struct LapData {
     pub last_lap_time_ms: u32,
     /// Current lap time in milliseconds.
     pub current_lap_time_ms: u32,
-    /// Current sector 1 time in milliseconds.
-    pub sector1_time_ms: u16,
+    /// Current sector 1 time millisecond part.
+    pub sector1_time_ms_part: u16,
     /// Sector 1 whole minute part.
     /// Available from the 2023 format onwards.
     #[br(if(packet_format >= 2023))]
-    pub sector1_time_minutes: u8,
-    /// Current sector 2 time in milliseconds.
-    pub sector2_time_ms: u16,
+    pub sector1_time_minutes_part: u8,
+    /// Current sector 2 time millisecond part.
+    pub sector2_time_ms_part: u16,
     /// Sector 2 whole minute part.
     /// Available from the 2023 format onwards.
     #[br(if(packet_format >= 2023))]
-    pub sector2_time_minutes: u8,
+    pub sector2_time_minutes_part: u8,
     /// Time delta to car in front in milliseconds.
     /// Available from the 2023 format onwards.
     #[br(if(packet_format >= 2023))]
-    pub delta_to_car_in_front_ms: u16,
+    pub delta_to_car_in_front_ms_part: u16,
+    /// Time delta to car in front whole minute part.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub delta_to_car_in_front_minutes_part: u8,
     /// Time delta to race leader in milliseconds.
     /// Available from the 2023 format onwards.
     #[br(if(packet_format >= 2023))]
     pub delta_to_race_leader_ms: u16,
+    /// Time delta to car in front whole minute part.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub delta_to_race_leader_minutes_part: u8,
     /// The distance the vehicle is around current lap in metres.
     /// It may be negative if the start/finish line hasn’t been crossed yet.
     pub lap_distance: f32,
@@ -66,12 +74,6 @@ pub struct LapData {
     /// Accumulated time penalties to be added in seconds.
     pub penalties: u8,
     /// Accumulated number of warnings issued.
-    /// Available only in the 2022 format.
-    #[br(if(packet_format == 2022))]
-    pub warnings: u8,
-    /// Accumulated number of warnings issued.
-    /// Available from the 2023 format onwards.
-    #[br(if(packet_format >= 2023))]
     pub total_warnings: u8,
     /// Accumulated number of corner cutting warnings issued.
     /// Available from the 2023 format onwards.
@@ -97,4 +99,13 @@ pub struct LapData {
     /// Whether the car should serve a penalty at this stop.
     #[br(try_map(u8_to_bool))]
     pub pit_stop_should_serve_pen: bool,
+    /// Fastest speed through speed trap for this car in kilometres per hour.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub speed_trap_fastest_speed: f32,
+    /// Number of the lap the fastest speed was achieved on
+    /// (255 means "not set")
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_format >= 2024))]
+    pub speed_trap_fastest_lap: u8,
 }

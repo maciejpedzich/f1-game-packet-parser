@@ -29,7 +29,9 @@ pub struct MarshalZone {
 
 #[non_exhaustive]
 /// Weather forecast sample for a given session.
-#[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(
+    BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,
+)]
 #[br(
     little,
     import(_packet_format: u16),

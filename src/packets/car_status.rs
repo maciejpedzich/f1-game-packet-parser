@@ -9,15 +9,7 @@ use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        max_gears <= 9,
-        "Car status entry has an invalid max number of gears: {}",
-        max_gears
-    )
-)]
+#[br(little, import(packet_format: u16))]
 pub struct CarStatusData {
     /// How much traction control is enabled.
     pub traction_control: TractionControl,
@@ -42,6 +34,13 @@ pub struct CarStatusData {
     /// Car's idle RPM.
     pub idle_rpm: u16,
     /// Maximum number of gears.
+    #[br(
+        assert(
+            max_gears <= 9,
+            "Car status entry has an invalid max number of gears: {}",
+            max_gears
+        )
+    )]
     pub max_gears: u8,
     /// Whether DRS can be used (might be unknown).
     pub drs_allowed: DrsAllowed,

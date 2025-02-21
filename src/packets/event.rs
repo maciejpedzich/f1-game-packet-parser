@@ -1,12 +1,14 @@
 use super::{u8_to_bool, u8_to_usize};
-use crate::constants::{ButtonStatus, InfringementType, PenaltyType};
+use crate::constants::{
+    ButtonStatus, InfringementType, PenaltyType, SafetyCarEventType, SafetyCarType,
+};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
-#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
-#[br(little)]
+#[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
+#[br(little, import(_packet_format: u16))]
 pub enum EventDataDetails {
     /// Sent when the session starts.
     #[br(magic = b"SSTA")]
@@ -141,5 +143,20 @@ pub enum EventDataDetails {
         /// Index of the overtaken vehicle.
         #[br(map(u8_to_usize))]
         overtaken_vehicle_index: usize,
+    },
+    /// Sent when safety car gets deployed.
+    /// Available from the 2024 format onwards.
+    #[br(magic = b"SCAR")]
+    SafetyCar { safety_car_type: SafetyCarType, event_type: SafetyCarEventType },
+    /// Sent when two vehicles collide.
+    /// Available from the 2024 format onwards.
+    #[br(magic = b"COLL")]
+    Collision {
+        /// Index of the first vehicle involved in the collision.
+        #[br(map(u8_to_usize))]
+        vehicle1_index: usize,
+        /// Index of the second vehicle involved in the collision.
+        #[br(map(u8_to_usize))]
+        vehicle2_index: usize,
     },
 }

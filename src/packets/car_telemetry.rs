@@ -6,52 +6,54 @@ use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(_packet_format: u16),
-    assert(
-        (0.0..=1.0).contains(&throttle),
-        "Car telemetry entry has an invalid throttle value: {}",
-        throttle
-    ),
-    assert(
-        (-1.0..=1.0).contains(&steer),
-        "Car telemetry entry has an invalid steering lock value: {}",
-        steer
-    ),
-    assert(
-        (0.0..=1.0).contains(&brake),
-        "Car telemetry entry has an invalid brake value: {}",
-        brake
-    ),
-    assert(
-        clutch <= 100,
-        "Car telemetry entry has an invalid clutch value: {}",
-        clutch
-    ),
-    assert(
-        (-1..=8).contains(&gear),
-        "Car telemetry entry has an invalid gear value: {}",
-        gear
-    ),
-    assert(
-        rev_lights_percent <= 100,
-        "Car telemetry entry has an invalid rev lights percentage: {}",
-        rev_lights_percent
-    ),
-)]
+#[br(little, import(_packet_format: u16))]
 pub struct CarTelemetryData {
     /// Speed of the car in kilometres per hour.
     pub speed: u16,
     /// Amount of throttle applied. Value in range `(0.0..=1.0)`.
+    #[br(
+        assert(
+            (0.0..=1.0).contains(&throttle),
+            "Car telemetry entry has an invalid throttle value: {}",
+            throttle
+        ),
+    )]
     pub throttle: f32,
     /// Steering lock. Value in range `(-1.0..=1.0)`.
+    #[br(
+        assert(
+            (-1.0..=1.0).contains(&steer),
+            "Car telemetry entry has an invalid steering lock value: {}",
+            steer
+        ),
+    )]
     pub steer: f32,
     /// Amount of brake applied. Value in range `(0.0..=1.0)`.
+    #[br(
+        assert(
+            (0.0..=1.0).contains(&brake),
+            "Car telemetry entry has an invalid brake value: {}",
+            brake
+        ),
+    )]
     pub brake: f32,
     /// Amount of clutch applied (percentage).
+    #[br(
+        assert(
+            clutch <= 100,
+            "Car telemetry entry has an invalid clutch value: {}",
+            clutch
+        ),
+    )]
     pub clutch: u8,
     /// Selected gear. Neutral = 0, reverse = -1.
+    #[br(
+        assert(
+            (-1..=8).contains(&gear),
+            "Car telemetry entry has an invalid gear value: {}",
+            gear
+        ),
+    )]
     pub gear: i8,
     /// Engine RPM.
     pub engine_rpm: u16,
@@ -59,6 +61,13 @@ pub struct CarTelemetryData {
     #[br(try_map(u8_to_bool))]
     pub drs_enabled: bool,
     /// Rev lights indicator (percentage).
+    #[br(
+        assert(
+            rev_lights_percent <= 100,
+            "Car telemetry entry has an invalid rev lights percentage: {}",
+            rev_lights_percent
+        ),
+    )]
     pub rev_lights_percent: u8,
     /// Bitmap of active rev lights.
     #[br(map(RevLights::from_bits_truncate))]

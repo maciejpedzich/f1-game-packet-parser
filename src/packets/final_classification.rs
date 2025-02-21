@@ -4,17 +4,11 @@ use crate::constants::{ActualTyreCompound, ResultStatus, VisualTyreCompound};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+const MAX_NUM_TYRE_STINTS: usize = 8;
+
 #[non_exhaustive]
-#[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(_packet_format: u16),
-    assert(
-        num_tyre_stints <= 8,
-        "Final classification entry has an invalid number of tyre stints: {}",
-        num_tyre_stints
-    )
-)]
+#[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
+#[br(little, import(_packet_format: u16))]
 pub struct FinalClassificationData {
     /// Finishing position.
     pub position: u8,
@@ -36,13 +30,26 @@ pub struct FinalClassificationData {
     pub penalties_time: u8,
     /// Number of penalties applied to this driver.
     pub num_penalties: u8,
-    /// Number of tyre stints (no greater than 8).
-    #[br(map(u8_to_usize))]
+    /// Number of tyre stints.
+    #[br(
+        map(u8_to_usize),
+        assert(
+            num_tyre_stints <= MAX_NUM_TYRE_STINTS,
+            "Final classification entry has an invalid number of tyre stints: {}",
+            num_tyre_stints
+        )
+    )]
     pub num_tyre_stints: usize,
     /// Actual tyres used by the driver.
-    pub tyre_stints_actual: [ActualTyreCompound; 8],
+    /// Should have a size equal to `num_tyre_stints`.
+    #[br(count(num_tyre_stints), pad_after(MAX_NUM_TYRE_STINTS - num_tyre_stints))]
+    pub tyre_stints_actual: Vec<ActualTyreCompound>,
     /// Visual tyres used by the driver.
-    pub tyre_stints_visual: [VisualTyreCompound; 8],
+    /// Should have a size equal to `num_tyre_stints`.
+    #[br(count(num_tyre_stints), pad_after(MAX_NUM_TYRE_STINTS - num_tyre_stints))]
+    pub tyre_stints_visual: Vec<VisualTyreCompound>,
     /// The lap numbers the stints end on.
-    pub tyre_stints_end_laps: [u8; 8],
+    /// Should have a size equal to `num_tyre_stints`.
+    #[br(count(num_tyre_stints), pad_after(MAX_NUM_TYRE_STINTS - num_tyre_stints))]
+    pub tyre_stints_end_laps: Vec<u8>,
 }

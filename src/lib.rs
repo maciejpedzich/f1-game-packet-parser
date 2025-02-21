@@ -6,7 +6,7 @@ use crate::packets::{
     u8_to_usize, F1PacketCarDamage, F1PacketCarSetups, F1PacketCarStatus,
     F1PacketCarTelemetry, F1PacketEvent, F1PacketFinalClassification, F1PacketLap,
     F1PacketLobbyInfo, F1PacketMotion, F1PacketMotionEx, F1PacketParticipants,
-    F1PacketSession, F1PacketSessionHistory, F1PacketTyreSets,
+    F1PacketSession, F1PacketSessionHistory, F1PacketTimeTrial, F1PacketTyreSets,
 };
 
 use binrw::io::Cursor;
@@ -125,4 +125,8 @@ pub struct F1PacketBody {
     /// Available from the 2023 format onwards.
     #[br(if(packet_id == PacketId::MotionEx), args(packet_format))]
     pub motion_ex: Option<F1PacketMotionEx>,
+    /// Extra information that's only relevant to time trial game mode.
+    /// Available from the 2024 format onwards.
+    #[br(if(packet_id == PacketId::TimeTrial), args(packet_format))]
+    pub time_trial: Option<F1PacketTimeTrial>,
 }

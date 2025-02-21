@@ -5,48 +5,48 @@ use serde::{Deserialize, Serialize};
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(_packet_format: u16))]
 pub struct CarSetupData {
-    /// Front wing aero
+    /// Front wing aero.
     pub front_wing: u8,
-    /// Rear wing aero
+    /// Rear wing aero.
     pub rear_wing: u8,
-    /// Differential adjustment on throttle (percentage)
+    /// Differential adjustment on throttle (percentage).
     pub on_throttle: u8,
-    /// Differential adjustment off throttle (percentage)
+    /// Differential adjustment off throttle (percentage).
     pub off_throttle: u8,
-    /// Front camber angle (suspension geometry)
+    /// Front camber angle (suspension geometry).
     pub front_camber: f32,
-    /// Rear camber angle (suspension geometry)
+    /// Rear camber angle (suspension geometry).
     pub rear_camber: f32,
-    /// Front toe angle (suspension geometry)
+    /// Front toe angle (suspension geometry).
     pub front_toe: f32,
-    /// Rear toe angle (suspension geometry)
+    /// Rear toe angle (suspension geometry).
     pub rear_toe: f32,
-    /// Front suspension
+    /// Front suspension.
     pub front_suspension: u8,
-    /// Rear suspension
+    /// Rear suspension.
     pub rear_suspension: u8,
-    /// Front anti-roll bar
+    /// Front anti-roll bar.
     pub front_anti_roll_bar: u8,
-    /// Rear anti-roll bar
+    /// Rear anti-roll bar.
     pub rear_anti_roll_bar: u8,
-    /// Front ride height
+    /// Front ride height.
     pub front_suspension_height: u8,
-    /// Rear ride height
+    /// Rear ride height.
     pub rear_suspension_height: u8,
-    /// Brake pressure (percentage)
+    /// Brake pressure (percentage).
     pub brake_pressure: u8,
-    /// Brake bias
+    /// Brake bias.
     pub brake_bias: u8,
-    /// Rear left tyre pressure
+    /// Rear left tyre pressure.
     pub rear_left_tyre_pressure: f32,
-    /// Rear right tyre pressure
+    /// Rear right tyre pressure.
     pub rear_right_tyre_pressure: f32,
-    /// Front left tyre pressure
+    /// Front left tyre pressure.
     pub front_left_tyre_pressure: f32,
-    /// Front right tyre pressure
+    /// Front right tyre pressure.
     pub front_right_tyre_pressure: f32,
-    /// Ballast
+    /// Ballast.
     pub ballast: u8,
-    /// Fuel load
+    /// Fuel load.
     pub fuel_load: f32,
 }
