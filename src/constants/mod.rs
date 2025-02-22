@@ -1441,6 +1441,7 @@ pub enum SafetyCar {
 pub enum SafetyCarExperience {
     Broadcast = 0,
     Immersive = 1,
+    Unknown = 255,
 }
 
 #[non_exhaustive]
@@ -1461,6 +1462,7 @@ pub enum SafetyCarExperience {
 pub enum FormationLapExperience {
     Broadcast = 0,
     Immersive = 1,
+    Unknown = 255,
 }
 
 #[non_exhaustive]
