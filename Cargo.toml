@@ -3,6 +3,7 @@ name = "f1-game-packet-parser"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.78"
+license = "MIT"
 
 [dependencies]
 binrw = "0.14"
