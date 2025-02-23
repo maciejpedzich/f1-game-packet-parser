@@ -70,7 +70,7 @@ pub struct CarTelemetryData {
     )]
     pub rev_lights_percent: u8,
     /// Bitmap of active rev lights.
-    #[br(map(RevLights::from_bits_truncate))]
+    #[br(map(RevLights::from_bits_retain))]
     pub rev_lights_bit_value: RevLights,
     /// Brakes' temperature values in degrees Celsius.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)

@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(_packet_format: u16))]
-pub enum EventDataDetails {
+pub enum EventDetails {
     /// Sent when the session starts.
     #[br(magic = b"SSTA")]
     SessionStarted,
@@ -130,7 +130,7 @@ pub enum EventDataDetails {
     #[br(magic = b"BUTN")]
     Buttons {
         /// Bitmap specifying which buttons are currently pressed.
-        #[br(map(ButtonStatus::from_bits_truncate))]
+        #[br(map(ButtonStatus::from_bits_retain))]
         button_status: ButtonStatus,
     },
     /// Sent when a car has overtaken another.
@@ -154,9 +154,9 @@ pub enum EventDataDetails {
     Collision {
         /// Index of the first vehicle involved in the collision.
         #[br(map(u8_to_usize))]
-        vehicle1_index: usize,
+        vehicle_index: usize,
         /// Index of the second vehicle involved in the collision.
         #[br(map(u8_to_usize))]
-        vehicle2_index: usize,
+        other_vehicle_index: usize,
     },
 }

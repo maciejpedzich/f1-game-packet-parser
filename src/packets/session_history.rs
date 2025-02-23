@@ -35,7 +35,7 @@ pub struct LapHistoryData {
     #[br(if(packet_format >= 2023))]
     pub sector3_time_minutes: u8,
     /// Bitmap of lap validity across all sectors and overall.
-    #[br(map(LapValid::from_bits_truncate))]
+    #[br(map(LapValid::from_bits_retain))]
     pub lap_valid_bit_flags: LapValid,
 }
 
