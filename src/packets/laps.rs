@@ -1,5 +1,5 @@
 use super::u8_to_bool;
-use crate::constants::{DriverStatus, PitStatus, ResultStatus};
+use crate::constants::{DriverStatus, PitStatus, ResultStatus, Sector};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
@@ -7,15 +7,7 @@ use serde::{Deserialize, Serialize};
 /// Lap data for a car on track.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
-#[br(
-    little,
-    import(packet_format: u16),
-    assert(
-        sector <= 2,
-        "Lap data entry has an invalid sector number: {}",
-        sector
-    )
-)]
+#[br(little, import(packet_format: u16))]
 pub struct LapData {
     /// Last lap time in milliseconds.
     pub last_lap_time_ms: u32,
@@ -66,8 +58,7 @@ pub struct LapData {
     /// Number of pit stops taken in this race.
     pub num_pit_stops: u8,
     /// Zero-based number of the sector the driver is currently going through.
-    /// S1 = 0, S2 = 1, S3 = 2.
-    pub sector: u8,
+    pub sector: Sector,
     /// Whether the current lap is invalid.
     #[br(try_map(u8_to_bool))]
     pub current_lap_invalid: bool,
@@ -104,7 +95,7 @@ pub struct LapData {
     #[br(if(packet_format >= 2024))]
     pub speed_trap_fastest_speed: f32,
     /// Number of the lap the fastest speed was achieved on
-    /// (255 means "not set")
+    /// (255 means "not set").
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024))]
     pub speed_trap_fastest_lap: u8,

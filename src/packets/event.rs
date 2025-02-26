@@ -1,6 +1,7 @@
 use super::{u8_to_bool, u8_to_usize};
 use crate::constants::{
     ButtonStatus, InfringementType, PenaltyType, SafetyCarEventType, SafetyCarType,
+    MAX_NUM_CARS,
 };
 
 use binrw::BinRead;
@@ -20,7 +21,14 @@ pub enum EventDetails {
     #[br(magic = b"FTLP")]
     FastestLap {
         /// Index of the car that's achieved the fastest lap.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Fastest lap event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
         /// Lap time in seconds.
         lap_time: f32,
@@ -29,7 +37,14 @@ pub enum EventDetails {
     #[br(magic = b"RTMT")]
     Retirement {
         /// Index of the retiring car.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Retirement event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
     },
     /// Sent when race control enable DRS.
@@ -42,17 +57,31 @@ pub enum EventDetails {
     #[br(magic = b"TMPT")]
     TeamMateInPits {
         /// Index of teammate's car.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Teammate in pits event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
     },
     /// Sent when the chequered flag has been waved.
     #[br(magic = b"CHQF")]
     ChequeredFlag,
-    /// Sent when the race winner is announced.
+    /// Sent when the race winner has been announced.
     #[br(magic = b"RCWN")]
     RaceWinner {
         /// Index of race winner's car.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Race winner event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
     },
     /// Sent when a penalty has been issued.
@@ -63,10 +92,24 @@ pub enum EventDetails {
         /// Infringement type.
         infringement_type: InfringementType,
         /// Index of the car the penalty is applied to.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Penalty event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
         /// Index of the other car involved.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                other_vehicle_index < MAX_NUM_CARS,
+                "Penalty event has an invalid other vehicle index: {}",
+                other_vehicle_index
+            )
+        )]
         other_vehicle_index: usize,
         /// Time gained/spent doing the action in seconds.
         time: u8,
@@ -79,7 +122,14 @@ pub enum EventDetails {
     #[br(magic = b"SPTP")]
     SpeedTrap {
         /// Index of the car that's triggered the speed trap.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Speed trap event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
         /// Top speed achieved in kilometres per hour.
         speed: f32,
@@ -90,7 +140,14 @@ pub enum EventDetails {
         #[br(try_map(u8_to_bool))]
         is_driver_fastest_in_session: bool,
         /// Index of the vehicle that's the fastest in the session.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Speed trap event has an invalid fastest vehicle index: {}",
+                vehicle_index
+            )
+        )]
         fastest_vehicle_index: usize,
         /// Fastest speed in the session in kilometres per hour.
         fastest_speed_in_session: f32,
@@ -147,7 +204,12 @@ pub enum EventDetails {
     /// Sent when safety car gets deployed.
     /// Available from the 2024 format onwards.
     #[br(magic = b"SCAR")]
-    SafetyCar { safety_car_type: SafetyCarType, event_type: SafetyCarEventType },
+    SafetyCar {
+        /// Type of the safety car that's been deployed.
+        safety_car_type: SafetyCarType,
+        /// New safety car deployment status.
+        event_type: SafetyCarEventType,
+    },
     /// Sent when two vehicles collide.
     /// Available from the 2024 format onwards.
     #[br(magic = b"COLL")]

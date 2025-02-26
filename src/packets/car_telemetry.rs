@@ -93,5 +93,5 @@ pub struct CarTelemetryData {
     /// Driving surface of each tyre.
     /// See [`wheel_index`](mod@crate::constants::wheel_index)
     /// for wheel order.
-    pub surface_type: Option<[Surface; 4]>,
+    pub surface_type: [Surface; 4],
 }

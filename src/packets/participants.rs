@@ -20,8 +20,7 @@ pub struct ParticipantsData {
     /// Unique ID for network players.
     pub network_id: u8,
     /// Team's ID.
-    /// See [`team_id`](mod@crate::constants::team_id)
-    /// for possible values.
+    /// See [`team_id`](mod@crate::constants::team_id) for possible values.
     pub team_id: u8,
     /// Whether my team is being used.
     #[br(try_map(u8_to_bool))]

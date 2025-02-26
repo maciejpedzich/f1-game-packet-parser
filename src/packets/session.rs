@@ -77,7 +77,7 @@ pub(super) fn get_forecast_samples_padding(
 
 #[inline(always)]
 fn get_max_num_samples(packet_format: u16) -> usize {
-    if packet_format == 2024 {
+    if packet_format >= 2024 {
         64
     } else {
         56

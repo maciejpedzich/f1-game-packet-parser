@@ -1,8 +1,16 @@
+/// Unique identifiers of drivers.
 pub mod driver_id;
-pub mod team_id;
-/// The wheel order is: `REAR_LEFT`, `REAR_RIGHT`, `FRONT_LEFT`, `FRONT_RIGHT`.
-pub mod wheel_index;
+/// Unique identifiers of session types.
 pub mod session_type;
+/// Unique identifiers of teams.
+pub mod team_id;
+/// Indexes of wheels in wheel-oriented arrays.
+/// The order is:
+/// [`REAR_LEFT`](const@wheel_index::REAR_LEFT),
+/// [`REAR_RIGHT`](const@wheel_index::REAR_RIGHT),
+/// [`FRONT_LEFT`](const@wheel_index::FRONT_LEFT),
+/// [`FRONT_RIGHT`](const@wheel_index::FRONT_RIGHT).
+pub mod wheel_index;
 
 use binrw::BinRead;
 use bitflags::bitflags;
@@ -10,6 +18,8 @@ use serde::{Deserialize, Serialize};
 
 pub(crate) const MAX_NUM_CARS: usize = 22;
 
+/// Unique identifier of the type of this packet.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -28,7 +38,7 @@ pub(crate) const MAX_NUM_CARS: usize = 22;
 pub enum PacketId {
     Motion = 0,
     Session = 1,
-    LapData = 2,
+    Laps = 2,
     Event = 3,
     Participants = 4,
     CarSetups = 5,
@@ -43,6 +53,9 @@ pub enum PacketId {
     TimeTrial = 14,
 }
 
+/// Flag that's currently being waved in
+/// a [`MarshalZone`](crate::packets::session::MarshalZone).
+/// Represents an [`i8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -67,6 +80,7 @@ pub enum MarshalZoneFlag {
     Red = 4,
 }
 
+/// Session/forecast weather type. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -91,6 +105,7 @@ pub enum Weather {
     Storm = 5,
 }
 
+/// Temperature change direction. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -112,6 +127,7 @@ pub enum TemperatureChange {
     NoChange = 2,
 }
 
+/// Unique circuit ID. Represents an [`i8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -128,42 +144,79 @@ pub enum TemperatureChange {
 )]
 #[br(little, repr(i8))]
 pub enum TrackId {
+    /// Unknown circuit.
     Unknown = -1,
-    Melbourne = 0,
+    /// Australian Grand Prix.
+    AlbertPark = 0,
+    /// French Grand Prix.
     PaulRicard = 1,
+    /// Chinese Grand Prix.
     Shanghai = 2,
+    /// Bahrain Grand Prix.
     Sakhir = 3,
+    /// Spanish Grand Prix.
     Catalunya = 4,
-    Monaco = 5,
+    /// Monaco Grand Prix.
+    MonteCarlo = 5,
+    /// Canadian Grand Prix.
     Montreal = 6,
+    /// British Grand Prix.
     Silverstone = 7,
+    /// German Grand Prix.
     Hockenheim = 8,
+    /// Hungarian Grand Prix.
     Hungaroring = 9,
+    /// Belgian Grand Prix.
     Spa = 10,
+    /// Italian Grand Prix.
     Monza = 11,
-    Singapore = 12,
+    /// Singapore Grand Prix.
+    MarinaBay = 12,
+    /// Japanese Grand Prix.
     Suzuka = 13,
-    AbuDhabi = 14,
-    Texas = 15,
-    Brazil = 16,
-    Austria = 17,
+    /// Abu Dhabi Grand Prix.
+    YasMarina = 14,
+    /// Circuit of the Americas. United States (Texas) Grand Prix.
+    Cota = 15,
+    /// Brazilian (Sao Paulo) Grand Prix.
+    Interlagos = 16,
+    /// Austrian Grand Prix.
+    RedBullRing = 17,
+    /// Russian Grand Prix.
     Sochi = 18,
-    Mexico = 19,
+    /// Mexican Grand Prix.
+    MexicoCity = 19,
+    /// Azerbaijan Grand Prix.
     Baku = 20,
+    /// Short variant of the [`Sakhir`](TrackId::Sakhir) circuit.
     SakhirShort = 21,
+    /// Short variant of the [`Silverstone`](TrackId::Silverstone) circuit.
     SilverstoneShort = 22,
-    TexasShort = 23,
+    /// Short variant of the [`Cota`](TrackId::Cota) circuit.
+    CotaShort = 23,
+    /// Short variant of the [`Suzuka`](TrackId::Suzuka) circuit.
     SuzukaShort = 24,
+    /// Vietnamese Grand Prix.
     Hanoi = 25,
+    /// Dutch Grand Prix.
     Zandvoort = 26,
+    /// ~~San Marino~~ Emilia-Romagna Grand Prix.
     Imola = 27,
+    /// Portuguese Grand Prix.
     Portimao = 28,
+    /// Saudi Arabian Grand Prix.
     Jeddah = 29,
+    /// Miami Grand Prix.
     Miami = 30,
+    /// Las Vegas Grand Prix.
     LasVegas = 31,
+    /// Qatar Grand Prix.
     Losail = 32,
 }
 
+/// Type of cars being raced in
+/// [`F1PacketSession`](struct@crate::F1PacketSession).
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -192,6 +245,8 @@ pub enum Formula {
     F1Elimination = 9,
 }
 
+/// Safety car deployment status in [`F1PacketSession`](struct@crate::F1PacketSession).
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -214,6 +269,9 @@ pub enum SafetyCarStatus {
     FormationLap = 3,
 }
 
+/// Accuracy of a
+/// [`WeatherForecastSample`](struct@crate::packets::session::WeatherForecastSample).
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -234,6 +292,7 @@ pub enum ForecastAccuracy {
     Approximate = 1,
 }
 
+/// Type of enabled braking assist. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -256,6 +315,7 @@ pub enum BrakingAssist {
     High = 3,
 }
 
+/// Type of enabled gearbox assist. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -278,6 +338,7 @@ pub enum GearboxAssist {
     Automatic = 3,
 }
 
+/// Type of enabled racing line assist. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -299,6 +360,7 @@ pub enum DynamicRacingLine {
     Full = 2,
 }
 
+/// Shape of the racing line. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -319,6 +381,7 @@ pub enum DynamicRacingLineType {
     ThreeDimensional = 1,
 }
 
+/// Game mode that's currently in use. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -359,6 +422,7 @@ pub enum GameMode {
     Benchmark = 127,
 }
 
+/// Set of rules that's in use for this session. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -386,6 +450,7 @@ pub enum RuleSet {
     RivalDuel = 11,
 }
 
+/// Length of the ongoing session. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -411,6 +476,7 @@ pub enum SessionLength {
     Full = 7,
 }
 
+/// Whether the car is outside/entering/in the pit lane. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -432,6 +498,29 @@ pub enum PitStatus {
     InPitArea = 2,
 }
 
+/// Zero-based sector number. Represents a [`u8`].
+#[non_exhaustive]
+#[derive(
+    BinRead,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Copy,
+    Clone,
+    Debug,
+    Hash,
+    Serialize,
+    Deserialize,
+)]
+#[br(little, repr(u8))]
+pub enum Sector {
+    First = 0,
+    Second = 1,
+    Third = 2,
+}
+
+/// Status of a driver in the current session. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -455,6 +544,8 @@ pub enum DriverStatus {
     OnTrack = 4,
 }
 
+/// Status of a driver's result in the current session and final classification.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -481,6 +572,7 @@ pub enum ResultStatus {
     Retired = 7,
 }
 
+/// Type of penalty awarded to a driver. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -517,6 +609,7 @@ pub enum PenaltyType {
     BlackFlagTimer = 17,
 }
 
+/// Type of offence commited by a driver. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -588,6 +681,9 @@ pub enum InfringementType {
     AttributeAssigned = 54,
 }
 
+/// Bit flags of specific controller buttons being pressed
+/// in a [`Buttons` event](variant@crate::packets::event::EventDetails::Buttons).
+/// Represents a [`u32`].
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash, Serialize, Deserialize,
 )]
@@ -672,6 +768,7 @@ bitflags! {
     }
 }
 
+/// Unique identifier of a driver's nationality. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -781,6 +878,7 @@ pub enum Nationality {
     Filipino = 90,
 }
 
+/// "Your telemetry" UDP setting value. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -801,6 +899,7 @@ pub enum YourTelemetry {
     Public = 1,
 }
 
+/// Type of surface a tyre is on. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -831,6 +930,8 @@ pub enum Surface {
     Ridged = 11,
 }
 
+/// Bit flags of lit rev lights on a steering wheel.
+/// Represents a [`u16`].
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash, Serialize, Deserialize,
 )]
@@ -871,6 +972,7 @@ bitflags! {
     }
 }
 
+/// Index of currently open multi-function display panel. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -895,6 +997,7 @@ pub enum MfdPanelIndex {
     Closed = 255,
 }
 
+/// Type of enabled traction control assist. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -916,6 +1019,7 @@ pub enum TractionControl {
     Full = 2,
 }
 
+/// Type of fuel mix that's currently in use. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -938,6 +1042,7 @@ pub enum FuelMix {
     Max = 3,
 }
 
+/// ERS deployment mode that's currently in use. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -960,6 +1065,7 @@ pub enum ErsDeployMode {
     Hotlap = 3,
 }
 
+/// Flag the driver is currently being shown. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -984,6 +1090,7 @@ pub enum VehicleFiaFlag {
     Red = 4,
 }
 
+/// Global DRS activation permission status. Represents an [`i8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1005,6 +1112,7 @@ pub enum DrsAllowed {
     Allowed = 1,
 }
 
+/// Session-independent tyre compound type. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1022,14 +1130,14 @@ pub enum DrsAllowed {
 #[br(little, repr(u8))]
 pub enum ActualTyreCompound {
     Unknown = 0,
-    F1C5 = 16,
-    F1C4 = 17,
-    F1C3 = 18,
-    F1C2 = 19,
-    F1C1 = 20,
-    F1C0 = 21,
-    F1Inter = 7,
-    F1Wet = 8,
+    C5 = 16,
+    C4 = 17,
+    C3 = 18,
+    C2 = 19,
+    C1 = 20,
+    C0 = 21,
+    Inter = 7,
+    Wet = 8,
     ClassicDry = 9,
     ClassicWet = 10,
     F2SuperSoft = 11,
@@ -1039,6 +1147,8 @@ pub enum ActualTyreCompound {
     F2Wet = 15,
 }
 
+/// Visual indicator of a tyre compound's type in a given session.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1070,6 +1180,7 @@ pub enum VisualTyreCompound {
     F2Wet = 15,
 }
 
+/// Readiness of a player in an online lobby. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1091,6 +1202,8 @@ pub enum ReadyStatus {
     Spectating = 2,
 }
 
+/// Bit flags of lap validity across all three sectors and overall.
+/// Represents a [`u8`].
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, Ord, PartialOrd, Hash, Serialize, Deserialize,
 )]
@@ -1109,6 +1222,7 @@ bitflags! {
     }
 }
 
+/// Speed unit used by a player. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1129,6 +1243,7 @@ pub enum SpeedUnit {
     KilometresPerHour = 1,
 }
 
+/// Temperature unit used by a player. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1149,6 +1264,8 @@ pub enum TemperatureUnit {
     Fahrenheit = 1,
 }
 
+/// Console or PC game distribution platform used by a player.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1173,6 +1290,8 @@ pub enum Platform {
     Unknown = 255,
 }
 
+/// Recovery mode assist that's currently enabled.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1194,6 +1313,8 @@ pub enum RecoveryMode {
     AutoRecovery = 2,
 }
 
+/// Flashback usage limit that's currently enabled.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1216,6 +1337,8 @@ pub enum FlashbackLimit {
     Unlimited = 3,
 }
 
+/// Type of surface simulation that's currently enabled.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1231,11 +1354,12 @@ pub enum FlashbackLimit {
     Deserialize,
 )]
 #[br(little, repr(u8))]
-pub enum SurfaceType {
+pub enum SurfaceSimType {
     Simplified = 0,
     Realistic = 1,
 }
 
+/// Difficulty of driving with low fuel. Represent a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1256,6 +1380,8 @@ pub enum LowFuelMode {
     Hard = 1,
 }
 
+/// Race starts assist that's currently in use.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1276,6 +1402,8 @@ pub enum RaceStarts {
     Assisted = 1,
 }
 
+/// Type of tyre temperature simulation that's currently in use.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1296,6 +1424,8 @@ pub enum TyreTemperature {
     SurfaceAndCarcass = 1,
 }
 
+/// Type of car damage simulation that's currently in use.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1318,6 +1448,7 @@ pub enum CarDamage {
     Simulation = 3,
 }
 
+/// Car damage severity. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1339,6 +1470,8 @@ pub enum CarDamageRate {
     Simulation = 2,
 }
 
+/// Type of collision simulation that's currently enabled.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1360,6 +1493,8 @@ pub enum Collisions {
     On = 2,
 }
 
+/// Type of corner cutting and track limits punishability.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1380,6 +1515,7 @@ pub enum CornerCuttingStringency {
     Strict = 1,
 }
 
+/// The way the game handles pit stops. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1401,6 +1537,8 @@ pub enum PitStopExperience {
     Immersive = 2,
 }
 
+/// The likelihood of safety car getting deployed with hazard on track.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1416,13 +1554,14 @@ pub enum PitStopExperience {
     Deserialize,
 )]
 #[br(little, repr(u8))]
-pub enum SafetyCar {
+pub enum SafetyCarIntensity {
     Off = 0,
     Reduced = 1,
     Standard = 2,
     Increased = 3,
 }
 
+/// The way the game handles safety car periods. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1444,6 +1583,7 @@ pub enum SafetyCarExperience {
     Unknown = 255,
 }
 
+/// The way the game handles formation laps. Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1465,6 +1605,8 @@ pub enum FormationLapExperience {
     Unknown = 255,
 }
 
+/// The likelihood of the game using a red flag after a serious incident.
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1480,13 +1622,16 @@ pub enum FormationLapExperience {
     Deserialize,
 )]
 #[br(little, repr(u8))]
-pub enum RedFlags {
+pub enum RedFlagIntensity {
     Off = 0,
     Reduced = 1,
     Standard = 2,
     Increased = 3,
 }
 
+/// Type of safety car being deployed in a
+/// [`SafetyCar` event](variant@crate::packets::event::EventDetails::SafetyCar).
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1509,6 +1654,8 @@ pub enum SafetyCarType {
     FormationLap = 3,
 }
 
+/// Type of [`SafetyCar` event](variant@crate::packets::event::EventDetails::SafetyCar).
+/// Represents a [`u8`].
 #[non_exhaustive]
 #[derive(
     BinRead,

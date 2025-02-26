@@ -1,5 +1,5 @@
 use super::{u8_to_bool, u8_to_usize};
-use crate::constants::{GearboxAssist, TractionControl};
+use crate::constants::{GearboxAssist, TractionControl, MAX_NUM_CARS};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
@@ -11,9 +11,17 @@ use serde::{Deserialize, Serialize};
 #[br(little, import(_packet_format: u16))]
 pub struct TimeTrialDataSet {
     /// Index of the car this data set relates to.
-    #[br(map(u8_to_usize))]
+    #[br(
+        map(u8_to_usize),
+        assert(
+            vehicle_index < MAX_NUM_CARS,
+            "Time trial data set has an invalid vehicle index: {}",
+            vehicle_index
+        )
+    )]
     pub vehicle_index: usize,
     /// Team's ID.
+    /// See [`team_id`](mod@crate::constants::team_id) for possible values.
     pub team_id: u8,
     /// Lap time in milliseconds.
     pub lap_time_ms: u32,

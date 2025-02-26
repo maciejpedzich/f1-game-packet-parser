@@ -43,32 +43,38 @@ pub struct CarMotionData {
 }
 
 impl CarMotionData {
-    /// Returns [`self.world_forward_dir_x`] divided by `32767.0f32`.
+    /// Returns [`world_forward_dir_x`](field@CarMotionData::world_forward_dir_x)
+    /// divided by `32767.0f32`.
     pub fn world_forward_dir_x_as_f32(&self) -> f32 {
         self.world_forward_dir_x as f32 / 32767.0
     }
 
-    /// Returns [`self.world_forward_dir_y`] divided by `32767.0f32`.
+    /// Returns [`world_forward_dir_y`](field@CarMotionData::world_forward_dir_y)
+    /// divided by `32767.0f32`.
     pub fn world_forward_dir_y_as_f32(&self) -> f32 {
         self.world_forward_dir_y as f32 / 32767.0
     }
 
-    /// Returns [`self.world_forward_dir_z`] divided by `32767.0f32`.
+    /// Returns [`world_forward_dir_z`](field@CarMotionData::world_forward_dir_z)
+    /// divided by `32767.0f32`.
     pub fn world_forward_dir_z_as_f32(&self) -> f32 {
         self.world_forward_dir_z as f32 / 32767.0
     }
 
-    /// Returns [`self.world_right_dir_x`] divided by `32767.0f32`.
+    /// Returns [`world_right_dir_x`](field@CarMotionData::world_right_dir_x)
+    /// divided by `32767.0f32`.
     pub fn world_right_dir_x_as_f32(&self) -> f32 {
         self.world_right_dir_x as f32 / 32767.0
     }
 
-    /// Returns [`self.world_right_dir_y`] divided by `32767.0f32`.
+    /// Returns [`world_right_dir_y`](field@CarMotionData::world_right_dir_y)
+    /// divided by `32767.0f32`.
     pub fn world_right_dir_y_as_f32(&self) -> f32 {
         self.world_right_dir_y as f32 / 32767.0
     }
 
-    /// Returns [`self.world_right_dir_z`] divided by `32767.0f32`.
+    /// Returns [`world_right_dir_z`](field@CarMotionData::world_right_dir_z)
+    /// divided by `32767.0f32`.
     pub fn world_right_dir_z_as_f32(&self) -> f32 {
         self.world_right_dir_z as f32 / 32767.0
     }

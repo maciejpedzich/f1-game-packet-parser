@@ -4,7 +4,7 @@ pub mod car_status;
 pub mod car_telemetry;
 pub mod event;
 pub mod final_classification;
-pub mod lap;
+pub mod laps;
 pub mod lobby;
 pub mod motion;
 pub mod participants;
@@ -17,17 +17,17 @@ use crate::constants::{
     BrakingAssist, CarDamage, CarDamageRate, Collisions, CornerCuttingStringency,
     DynamicRacingLine, DynamicRacingLineType, FlashbackLimit, ForecastAccuracy,
     FormationLapExperience, Formula, GameMode, GearboxAssist, LowFuelMode, MfdPanelIndex,
-    PitStopExperience, RaceStarts, RecoveryMode, RedFlags, RuleSet, SafetyCar,
-    SafetyCarExperience, SafetyCarStatus, SessionLength, SpeedUnit,
-    SurfaceType, TemperatureUnit, TrackId, TyreTemperature, Weather, MAX_NUM_CARS,
+    PitStopExperience, RaceStarts, RecoveryMode, RedFlagIntensity, RuleSet,
+    SafetyCarExperience, SafetyCarIntensity, SafetyCarStatus, SessionLength, SpeedUnit,
+    SurfaceSimType, TemperatureUnit, TrackId, TyreTemperature, Weather, MAX_NUM_CARS,
 };
 use crate::packets::car_damage::CarDamageData;
 use crate::packets::car_setups::CarSetupData;
 use crate::packets::car_status::CarStatusData;
 use crate::packets::car_telemetry::CarTelemetryData;
-use crate::packets::event::EventDataDetails;
+use crate::packets::event::EventDetails;
 use crate::packets::final_classification::FinalClassificationData;
-use crate::packets::lap::LapData;
+use crate::packets::laps::LapData;
 use crate::packets::lobby::LobbyInfoData;
 use crate::packets::motion::CarMotionData;
 use crate::packets::participants::ParticipantsData;
@@ -45,24 +45,26 @@ use crate::packets::tyre_sets::{TyreSetData, NUM_TYRE_SETS};
 
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
+use std::error::Error;
 use std::fmt;
 use std::string::FromUtf8Error;
 
-/// Physics data for all the cars being driven.
+/// The motion packet gives physics data for all the cars being driven.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketMotion {
-    /// Motion data for all cars on track.
+    /// Motion data for all cars on track. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
-    pub car_motion_data: Vec<CarMotionData>,
-    /// Extra player car only motion data.
+    pub data: Vec<CarMotionData>,
+    /// Extra player-car-only motion data.
     /// Available only in the 2022 format.
     #[br(if(packet_format == 2022))]
-    pub motion_ex_data: Option<F1PacketMotionEx>,
+    pub motion_ex: Option<F1PacketMotionEx>,
 }
 
-/// Data about the ongoing session.
+/// The session packet includes details about the current session in progress.
+/// ## Example
 #[allow(clippy::struct_excessive_bools)]
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
@@ -248,7 +250,7 @@ pub struct F1PacketSession {
     /// Surface simulation type.
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024))]
-    pub surface_type: Option<SurfaceType>,
+    pub surface_sim_type: Option<SurfaceSimType>,
     /// Low fuel driving difficulty.
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024))]
@@ -305,7 +307,7 @@ pub struct F1PacketSession {
     /// Safety car intensity.
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024))]
-    pub safety_car: Option<SafetyCar>,
+    pub safety_car_intensity: Option<SafetyCarIntensity>,
     /// Safety car experience.
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024))]
@@ -321,7 +323,7 @@ pub struct F1PacketSession {
     /// Red flag intensity.
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024))]
-    pub red_flags: Option<RedFlags>,
+    pub red_flag_intensity: Option<RedFlagIntensity>,
     /// Whether this single player game affects the license level.
     /// Available from the 2024 format onwards.
     #[br(if(packet_format >= 2024), try_map(u8_to_bool))]
@@ -343,6 +345,8 @@ pub struct F1PacketSession {
     /// List of sessions that shows this weekend's structure.
     /// Should have a size equal to
     /// [`num_sessions_in_weekend`](field@crate::packets::F1PacketSession::num_sessions_in_weekend).
+    /// See [`session_type`](mod@crate::constants::session_type)
+    /// for possible values.
     /// Available from the 2024 format onwards.
     #[br(
         if(packet_format >= 2024),
@@ -364,10 +368,10 @@ pub struct F1PacketSession {
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
-pub struct F1PacketLap {
-    /// Lap data for all cars on track.
+pub struct F1PacketLaps {
+    /// Lap data for all cars on track. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
-    pub lap_data: Vec<LapData>,
+    pub data: Vec<LapData>,
     /// Index of personal best car in time trial mode (255 if invalid).
     #[br(map(u8_to_usize))]
     pub time_trial_pb_car_index: usize,
@@ -386,10 +390,10 @@ pub struct F1PacketEvent {
         try_map(|bytes: [u8; 4]| String::from_utf8(bytes.to_vec())),
         restore_position
     )]
-    pub event_string_code: String,
+    pub code: String,
     /// Extra data for this event.
     #[br(args(packet_format))]
-    pub event_details: EventDataDetails,
+    pub details: EventDetails,
 }
 
 /// Data of participants in the session, mostly relevant for multiplayer.
@@ -412,7 +416,7 @@ pub struct F1PacketParticipants {
     /// Should have a size equal to
     /// [`num_active_cars`](field@crate::packets::F1PacketParticipants::num_active_cars).
     #[br(count(num_active_cars), args{ inner: (packet_format,) })]
-    pub participants_data: Vec<ParticipantsData>,
+    pub data: Vec<ParticipantsData>,
 }
 
 /// Car setups for all cars in the race.
@@ -422,9 +426,9 @@ pub struct F1PacketParticipants {
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarSetups {
-    /// Setup data for all cars on track.
+    /// Setup data for all cars on track. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
-    pub car_setups_data: Vec<CarSetupData>,
+    pub data: Vec<CarSetupData>,
     /// Value of front wing after next pit stop - player only.
     /// Available from the 2024 format onwards
     #[br(if(packet_format >= 2024))]
@@ -436,12 +440,12 @@ pub struct F1PacketCarSetups {
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarTelemetry {
-    /// Telemetry data for all cars on track.
+    /// Telemetry data for all cars on track. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
-    pub car_telemetry_data: Vec<CarTelemetryData>,
-    /// Index of currently open MFD panel.
+    pub data: Vec<CarTelemetryData>,
+    /// Index of currently open MFD panel for player 1.
     pub mfd_panel_index: MfdPanelIndex,
-    /// See `mfd_panel_index`.
+    /// Index of currently open MFD panel for player 2.
     pub mfd_panel_index_secondary_player: MfdPanelIndex,
     /// Suggested gear (0 if no gear suggested).
     #[br(
@@ -459,9 +463,9 @@ pub struct F1PacketCarTelemetry {
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarStatus {
-    /// Status data for all cars.
+    /// Car status data for all cars. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
-    pub car_status_data: Vec<CarStatusData>,
+    pub data: Vec<CarStatusData>,
 }
 
 /// Final classification confirmation at the end of a race.
@@ -483,14 +487,14 @@ pub struct F1PacketFinalClassification {
     /// Should have a size equal to
     /// [`num_cars`](field@crate::packets::F1PacketFinalClassification::num_cars).
     #[br(count(num_cars), args{ inner: (packet_format,) })]
-    pub final_classification_data: Vec<FinalClassificationData>,
+    pub data: Vec<FinalClassificationData>,
 }
 
 /// Packet detailing all the players that are currently in a multiplayer lobby.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
-pub struct F1PacketLobbyInfo {
+pub struct F1PacketLobby {
     /// Number of players in the lobby.
     #[br(
         map(u8_to_usize),
@@ -503,9 +507,9 @@ pub struct F1PacketLobbyInfo {
     pub num_players: usize,
     /// Lobby info data for all players.
     /// Should have a size equal to
-    /// [`num_players`](field@crate::packets::F1PacketLobbyInfo::num_players).
+    /// [`num_players`](field@crate::packets::F1PacketLobby::num_players).
     #[br(count(num_players), args{ inner: (packet_format,) })]
-    pub lobby_info_data: Vec<LobbyInfoData>,
+    pub data: Vec<LobbyInfoData>,
 }
 
 /// Car damage parameters for all cars in the session.
@@ -513,12 +517,12 @@ pub struct F1PacketLobbyInfo {
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
 pub struct F1PacketCarDamage {
-    /// Car damage data.
+    /// Car damage data. Should have a size of 22.
     #[br(count(MAX_NUM_CARS), args{ inner: (packet_format,) })]
-    pub car_damage_data: Vec<CarDamageData>,
+    pub data: Vec<CarDamageData>,
 }
 
-/// Packet detailing lap and tyre data history for a given driver in the session
+/// Packet detailing lap and tyre data history for a given driver in the session.
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(packet_format: u16))]
@@ -591,7 +595,7 @@ pub struct F1PacketTyreSets {
     pub vehicle_index: usize,
     /// 13 dry + 7 wet tyre sets.
     #[br(count(NUM_TYRE_SETS), args{ inner: (packet_format,) })]
-    pub tyre_set_data: Vec<TyreSetData>,
+    pub data: Vec<TyreSetData>,
     /// Index of fitted tyre set.
     #[br(
         map(u8_to_usize),
@@ -718,19 +722,21 @@ pub struct F1PacketTimeTrial {
 }
 
 #[derive(Debug, PartialEq)]
-pub(crate) struct InvalidBoolValue(u8);
+pub(crate) struct MapBoolError(u8);
 
-impl fmt::Display for InvalidBoolValue {
+impl fmt::Display for MapBoolError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "Invalid bool value: {}", self.0)
     }
 }
 
-pub(crate) fn u8_to_bool(value: u8) -> Result<bool, InvalidBoolValue> {
+impl Error for MapBoolError {}
+
+pub(crate) fn u8_to_bool(value: u8) -> Result<bool, MapBoolError> {
     match value {
         0 => Ok(false),
         1 => Ok(true),
-        _ => Err(InvalidBoolValue(value)),
+        _ => Err(MapBoolError(value)),
     }
 }
 

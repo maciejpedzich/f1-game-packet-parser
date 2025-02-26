@@ -10,8 +10,22 @@ pub struct CarSetupData {
     /// Rear wing aero.
     pub rear_wing: u8,
     /// Differential adjustment on throttle (percentage).
+    #[br(
+        assert(
+            on_throttle <= 100,
+            "Car setup entry has an invalid on-throttle percentage value: {}",
+            on_throttle
+        )
+    )]
     pub on_throttle: u8,
     /// Differential adjustment off throttle (percentage).
+    #[br(
+        assert(
+            off_throttle <= 100,
+            "Car setup entry has an invalid off-throttle percentage value: {}",
+            off_throttle
+        )
+    )]
     pub off_throttle: u8,
     /// Front camber angle (suspension geometry).
     pub front_camber: f32,
@@ -34,6 +48,13 @@ pub struct CarSetupData {
     /// Rear ride height.
     pub rear_suspension_height: u8,
     /// Brake pressure (percentage).
+    #[br(
+        assert(
+            brake_pressure <= 100,
+            "Car setup entry has an invalid brake pressure percentage value: {}",
+            brake_pressure
+        )
+    )]
     pub brake_pressure: u8,
     /// Brake bias.
     pub brake_bias: u8,
