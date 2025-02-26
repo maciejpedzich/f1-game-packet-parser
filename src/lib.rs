@@ -21,7 +21,7 @@
 //! fn main() -> Result<(), Box<dyn Error>> {
 //!     // This IP and port should be set in the game's options by default.
 //!     let socket = UdpSocket::bind("127.0.0.1:20777")?;
-//!     let mut buf = [0u8; 1460];
+//!     let mut buf = [0u8; 1464];
 //!
 //!     loop {
 //!         // Receive raw packet data from the game.
@@ -223,7 +223,7 @@ use serde::{Deserialize, Serialize};
 /// fn main() -> Result<(), Box<dyn Error>> {
 ///     // This IP and port should be set in the game's options by default.
 ///     let socket = UdpSocket::bind("127.0.0.1:20777")?;
-///     let mut buf = [0u8; 1460];
+///     let mut buf = [0u8; 1464];
 ///
 ///     loop {
 ///         // Receive raw packet data from the game.
