@@ -37,7 +37,7 @@ use crate::packets::session::{
     MAX_NUM_MARSHAL_ZONES, MAX_NUM_SESSIONS,
 };
 use crate::packets::session_history::{
-    LapHistoryData, TyreStintHistoryData, LAP_HISTORY_RAW_SIZE, MAX_NUM_LAPS,
+    get_lap_history_raw_size, LapHistoryData, TyreStintHistoryData, MAX_NUM_LAPS,
     MAX_NUM_TYRE_STINTS,
 };
 use crate::packets::time_trial::TimeTrialDataSet;
@@ -335,6 +335,7 @@ pub struct F1PacketSession {
     /// Number of sessions in the ongoing race weekend.
     #[br(
         map(u8_to_usize),
+        if(packet_format >= 2024),
         assert(
             num_sessions_in_weekend <= MAX_NUM_SESSIONS,
             "Session packet has an invalid number of sessions in a weekend: {}",
@@ -574,7 +575,7 @@ pub struct F1PacketSessionHistory {
     #[br(
         count(num_laps),
         args{ inner: (packet_format,) },
-        pad_after((MAX_NUM_LAPS - num_laps) * LAP_HISTORY_RAW_SIZE)
+        pad_after((MAX_NUM_LAPS - num_laps) * get_lap_history_raw_size(packet_format))
     )]
     pub lap_history_data: Vec<LapHistoryData>,
     /// Tyre stint history.
