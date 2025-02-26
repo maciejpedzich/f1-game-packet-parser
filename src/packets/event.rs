@@ -102,14 +102,8 @@ pub enum EventDetails {
         )]
         vehicle_index: usize,
         /// Index of the other car involved.
-        #[br(
-            map(u8_to_usize),
-            assert(
-                other_vehicle_index < MAX_NUM_CARS,
-                "Penalty event has an invalid other vehicle index: {}",
-                other_vehicle_index
-            )
-        )]
+        /// Set to 255 if only one driver is involved.
+        #[br(map(u8_to_usize))]
         other_vehicle_index: usize,
         /// Time gained/spent doing the action in seconds.
         time: u8,
