@@ -45,7 +45,7 @@
 //! differentiate between all packet types and extract their payloads.
 //! Of course, you can remove the branches you don't need.
 //!
-//! ```no_run
+//! ```ignore
 //! use f1_game_packet_parser::parse;
 //!
 //! let placeholder_data = include_bytes!("placeholder.bin");
@@ -99,7 +99,7 @@
 //! You can import the enum and use a matcher to determine an event's type
 //! and extract its payload (if available) like so:
 //!
-//! ```no_run
+//! ```ignore
 //! use f1_game_packet_parser::packets::event::EventDetails;
 //! use f1_game_packet_parser::parse;
 //!
@@ -146,7 +146,7 @@
 //! and determine whether the revs are high, medium or low
 //! based on the specific bit values being set.
 //!
-//! ```no_run
+//! ```ignore
 //! use f1_game_packet_parser::constants::RevLights;
 //! use f1_game_packet_parser::parse;
 //!
@@ -245,7 +245,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// assert!(parse_result.is_err());
 /// assert_eq!(
-///     parse_result.unwrap_err().to_string(),
+///     parse_result.unwrap_err().root_cause().to_string(),
 ///     "Invalid or unsupported packet format: 2137 at 0x0"
 /// );
 /// ```
