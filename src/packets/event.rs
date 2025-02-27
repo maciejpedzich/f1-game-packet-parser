@@ -184,6 +184,9 @@ pub enum EventDetails {
         #[br(map(ButtonStatus::from_bits_retain))]
         button_status: ButtonStatus,
     },
+    /// Sent when the red flag is shown.
+    #[br(magic = b"RDFL")]
+    RedFlag,
     /// Sent when a car has overtaken another.
     /// Available from the 2023 format onwards.
     #[br(magic = b"OVTK")]
