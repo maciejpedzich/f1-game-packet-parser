@@ -1,6 +1,7 @@
 # f1-game-packet-parser
 
-This is a Rust crate that allows you to convert raw binary data from F1 24, F1 23, and F1 22 UDP telemetry into organised structs.
+This is a Rust crate that allows you to convert raw binary data from F1 24, F1 23, and F1 22 UDP telemetry into
+organised structs.
 
 ## Getting started
 
@@ -13,7 +14,8 @@ f1_game_packet_parser = "1.0.0"
 
 ## Example
 
-This crate doesn't provide a UDP client out of the box. Here's how to write one that will parse and pretty-print incoming packets:
+This crate doesn't provide a UDP client out of the box. Here's how to write one that will parse and pretty-print
+incoming packets:
 
 ```rust
 use f1_game_packet_parser::parse;
@@ -23,7 +25,7 @@ use std::net::UdpSocket;
 fn main() -> Result<(), Box<dyn Error>> {
     // This IP and port should be set in the game's options by default.
     let socket = UdpSocket::bind("127.0.0.1:20777")?;
-    let mut buf = [0u8; 1460];
+    let mut buf = [0u8; 1464];
 
     loop {
         // Receive raw packet data from the game.
@@ -39,7 +41,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 ## Minimum supported Rust version
 
-The minimum supported Rust version is documented in the Cargo.toml file. This may be bumped in minor releases if necessary.
+The minimum supported Rust version is documented in the Cargo.toml file. This may be bumped in minor releases if
+necessary.
 
 ## Original documentation links
 
