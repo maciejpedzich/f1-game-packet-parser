@@ -137,9 +137,9 @@ pub enum EventDetails {
         #[br(
             map(u8_to_usize),
             assert(
-                vehicle_index < MAX_NUM_CARS,
+                fastest_vehicle_index < MAX_NUM_CARS,
                 "Speed trap event has an invalid fastest vehicle index: {}",
-                vehicle_index
+                fastest_vehicle_index
             )
         )]
         fastest_vehicle_index: usize,
@@ -159,14 +159,28 @@ pub enum EventDetails {
     #[br(magic = b"DTSV")]
     DriveThroughServed {
         /// Index of the vehicle serving the penalty.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Drive-through served event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
     },
     /// Sent when a driver has served a stop-go penalty.
     #[br(magic = b"SGSV")]
     StopGoServed {
         /// Index of the vehicle serving the penalty.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Stop-go served event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
     },
     /// Sent when a flashback is activated.
@@ -185,6 +199,7 @@ pub enum EventDetails {
         button_status: ButtonStatus,
     },
     /// Sent when the red flag is shown.
+    /// Available from the 2023 format onwards.
     #[br(magic = b"RDFL")]
     RedFlag,
     /// Sent when a car has overtaken another.
@@ -192,10 +207,24 @@ pub enum EventDetails {
     #[br(magic = b"OVTK")]
     Overtake {
         /// Index of the overtaking vehicle.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                overtaking_vehicle_index < MAX_NUM_CARS,
+                "Overtake event has an invalid overtaking vehicle index: {}",
+                overtaking_vehicle_index
+            )
+        )]
         overtaking_vehicle_index: usize,
         /// Index of the overtaken vehicle.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                overtaken_vehicle_index < MAX_NUM_CARS,
+                "Collision event has an invalid overtaken vehicle index: {}",
+                overtaken_vehicle_index
+            )
+        )]
         overtaken_vehicle_index: usize,
     },
     /// Sent when safety car gets deployed.
@@ -212,10 +241,24 @@ pub enum EventDetails {
     #[br(magic = b"COLL")]
     Collision {
         /// Index of the first vehicle involved in the collision.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                vehicle_index < MAX_NUM_CARS,
+                "Collision event has an invalid vehicle index: {}",
+                vehicle_index
+            )
+        )]
         vehicle_index: usize,
         /// Index of the second vehicle involved in the collision.
-        #[br(map(u8_to_usize))]
+        #[br(
+            map(u8_to_usize),
+            assert(
+                other_vehicle_index < MAX_NUM_CARS,
+                "Collision event has an invalid other vehicle index: {}",
+                other_vehicle_index
+            )
+        )]
         other_vehicle_index: usize,
     },
 }
