@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
-#[br(little, import(_packet_format: u16))]
+#[br(little, import(packet_format: u16))]
 pub struct CarSetupData {
     /// Front wing aero.
     pub front_wing: u8,
@@ -56,8 +56,26 @@ pub struct CarSetupData {
         )
     )]
     pub brake_pressure: u8,
-    /// Brake bias.
+    /// Brake bias (percentage).
+    #[br(
+        assert(
+            brake_bias <= 100,
+            "Car setup entry has an invalid brake bias percentage value: {}",
+            brake_pressure
+        )
+    )]
     pub brake_bias: u8,
+    /// Engine braking (percentage).
+    /// Available from the 2024 format onwards.
+    #[br(
+        if(packet_format >= 2024),
+        assert(
+            engine_braking <= 100,
+            "Car setup entry has an engine braking percentage value: {}",
+            brake_pressure
+        )
+    )]
+    pub engine_braking: u8,
     /// Rear left tyre pressure.
     pub rear_left_tyre_pressure: f32,
     /// Rear right tyre pressure.
