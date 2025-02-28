@@ -186,7 +186,7 @@ pub mod constants;
 /// and submodules for packet-specific structs.
 pub mod packets;
 
-use crate::constants::{PacketId, MAX_NUM_CARS};
+use crate::constants::PacketId;
 use crate::packets::{
     u8_to_usize, F1PacketCarDamage, F1PacketCarSetups, F1PacketCarStatus,
     F1PacketCarTelemetry, F1PacketEvent, F1PacketFinalClassification, F1PacketLaps,
@@ -361,15 +361,8 @@ pub struct F1PacketHeader {
     /// Available from the 2023 format onwards.
     #[br(if(packet_format >= 2023))]
     pub overall_frame_identifier: u32,
-    /// Index of player 1's car.
-    #[br(
-        map(u8_to_usize),
-        assert(
-            player_car_index < MAX_NUM_CARS,
-            "Header has an invalid player 1 car index: {}",
-            player_car_index
-        )
-    )]
+    /// Index of player 1's car (255 if in spectator mode).
+    #[br(map(u8_to_usize))]
     pub player_car_index: usize,
     /// Index of player 2's car in splitscreen mode.
     /// Set to 255 if not in splitscreen mode.
