@@ -11,6 +11,10 @@ keywords = ["f1", "f1-telemetry", "f1-udp-parser", "f1-udp-telemetry", "f1-telem
 categories = ["parser-implementations"]
 authors = ["Maciej Pędzich <contact@maciejpedzi.ch>"]
 license = "MIT"
+exclude = [
+    ".github/*",
+    ".idea/*",
+]
 
 [dependencies]
 binrw = "0.14.1"
