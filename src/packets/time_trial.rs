@@ -4,6 +4,7 @@ use crate::constants::{GearboxAssist, TractionControl, MAX_NUM_CARS};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+#[allow(clippy::struct_excessive_bools)]
 #[non_exhaustive]
 #[derive(
     BinRead, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize,

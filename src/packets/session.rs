@@ -62,12 +62,10 @@ pub struct WeatherForecastSample {
     pub rain_percentage: u8,
 }
 
-#[inline(always)]
 pub(super) fn check_num_forecast_samples(packet_format: u16, num_samples: usize) -> bool {
     num_samples <= get_max_num_samples(packet_format)
 }
 
-#[inline(always)]
 pub(super) fn get_forecast_samples_padding(
     packet_format: u16,
     num_samples: usize,
@@ -75,7 +73,6 @@ pub(super) fn get_forecast_samples_padding(
     (get_max_num_samples(packet_format) - num_samples) * FORECAST_SAMPLE_RAW_SIZE
 }
 
-#[inline(always)]
 fn get_max_num_samples(packet_format: u16) -> usize {
     if packet_format >= 2024 {
         64

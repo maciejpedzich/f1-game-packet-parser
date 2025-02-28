@@ -2,6 +2,7 @@ use super::u8_to_bool;
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+#[allow(clippy::struct_excessive_bools)]
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(_packet_format: u16))]

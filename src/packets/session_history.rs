@@ -53,7 +53,6 @@ pub struct TyreStintHistoryData {
     pub visual_tyre_compound: VisualTyreCompound,
 }
 
-#[inline(always)]
 pub(super) fn get_lap_history_raw_size(packet_format: u16) -> usize {
     if packet_format >= 2023 {
         14

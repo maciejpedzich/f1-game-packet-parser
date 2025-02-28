@@ -693,78 +693,78 @@ bitflags! {
     impl ButtonStatus: u32 {
         /// The "A" button on an Xbox controller
         /// or the cross button on a PlayStation controller.
-        /// Has a value of `0x00000001`.
-        const A_OR_CROSS = 0x00000001;
+        /// Has a value of `0x0000_0001`.
+        const A_OR_CROSS = 0x0000_0001;
         /// The "Y" button on an Xbox controller
         /// or the triangle button on a PlayStation controller.
-        /// Has a value of `0x00000002`.
-        const Y_OR_TRIANGLE = 0x00000002;
+        /// Has a value of `0x0000_0002`.
+        const Y_OR_TRIANGLE = 0x0000_0002;
         /// The "B" button on an Xbox controller
         /// or the circle button on a PlayStation controller.
-        /// Has a value of `0x00000004`.
-        const B_OR_CIRCLE = 0x00000004;
+        /// Has a value of `0x0000_0004`.
+        const B_OR_CIRCLE = 0x0000_0004;
         /// The "X" button on an Xbox controller
         /// or the square button on a PlayStation controller.
-        /// Has a value of `0x00000008`.
-        const X_OR_SQUARE = 0x00000008;
-        /// Left directional pad button. Has a value of `0x00000010`.
-        const DPAD_LEFT = 0x00000010;
-        /// Right directional pad button. Has a value of `0x00000020`.
-        const DPAD_RIGHT = 0x00000020;
-        /// Up directional pad button. Has a value of `0x00000040`.
-        const DPAD_UP = 0x00000040;
-        /// Down directional pad button. Has a value of `0x00000080`.
-        const DPAD_DOWN = 0x00000080;
+        /// Has a value of `0x0000_0008`.
+        const X_OR_SQUARE = 0x0000_0008;
+        /// Left directional pad button. Has a value of `0x0000_0010`.
+        const DPAD_LEFT = 0x0000_0010;
+        /// Right directional pad button. Has a value of `0x0000_0020`.
+        const DPAD_RIGHT = 0x0000_0020;
+        /// Up directional pad button. Has a value of `0x0000_0040`.
+        const DPAD_UP = 0x0000_0040;
+        /// Down directional pad button. Has a value of `0x0000_0080`.
+        const DPAD_DOWN = 0x0000_0080;
         /// The "Menu" button on an Xbox controller
         /// or the "Options" button on a PlayStation controller.
-        /// Has a value of `0x00000100`.
-        const MENU_OR_OPTIONS = 0x00000100;
-        /// Left bumper. Has a value of `0x00000200`.
-        const LEFT_BUMPER = 0x00000200;
-        /// Right bumper. Has a value of `0x00000400`.
-        const RIGHT_BUMPER = 0x00000400;
-        /// Left trigger. Has a value of `0x00000800`.
-        const LEFT_TRIGGER = 0x00000800;
-        /// Right trigger. Has a value of `0x00001000`.
-        const RIGHT_TRIGGER = 0x00001000;
-        /// Left analog stick click. Has a value of `0x00002000`.
-        const LEFT_STICK_CLICK = 0x00002000;
-        /// Right analog stick click. Has a value of `0x00004000`.
-        const RIGHT_STICK_CLICK = 0x00004000;
-        /// Right analog stick left. Has a value of `0x00008000`.
-        const RIGHT_STICK_LEFT = 0x00008000;
-        /// Right analog stick right. Has a value of `0x00010000`
-        const RIGHT_STICK_RIGHT = 0x00010000;
-        /// Right analog stick up. Has a value of `0x00020000`
-        const RIGHT_STICK_UP = 0x00020000;
-        /// Right analog stick down. Has a value of `0x00040000`
-        const RIGHT_STICK_DOWN = 0x00040000;
-        /// Special button. Has a value of `0x00080000`.
-        const SPECIAL = 0x00080000;
-        /// UDP Action 1. Has a value of `0x00100000`.
-        const UDP_ACTION_1 = 0x00100000;
-        /// UDP Action 2. Has a value of `0x00200000`.
-        const UDP_ACTION_2 = 0x00200000;
-        /// UDP Action 3. Has a value of `0x00400000`.
-        const UDP_ACTION_3 = 0x00400000;
-        /// UDP Action 4. Has a value of `0x00800000`.
-        const UDP_ACTION_4 = 0x00800000;
-        /// UDP Action 5. Has a value of `0x01000000`.
-        const UDP_ACTION_5 = 0x01000000;
-        /// UDP Action 6. Has a value of `0x02000000`.
-        const UDP_ACTION_6 = 0x02000000;
-        /// UDP Action 7. Has a value of `0x04000000`.
-        const UDP_ACTION_7 = 0x04000000;
-        /// UDP Action 8. Has a value of `0x08000000`.
-        const UDP_ACTION_8 = 0x08000000;
-        /// UDP Action 9. Has a value of `0x10000000`.
-        const UDP_ACTION_9 = 0x10000000;
-        /// UDP Action 10. Has a value of `0x20000000`.
-        const UDP_ACTION_10 = 0x20000000;
-        /// UDP Action 11. Has a value of `0x40000000`.
-        const UDP_ACTION_11 = 0x40000000;
-        /// UDP Action 12. Has a value of `0x80000000`.
-        const UDP_ACTION_12 = 0x80000000;
+        /// Has a value of `0x0000_0100`.
+        const MENU_OR_OPTIONS = 0x0000_0100;
+        /// Left bumper. Has a value of `0x0000_0200`.
+        const LEFT_BUMPER = 0x0000_0200;
+        /// Right bumper. Has a value of `0x0000_0400`.
+        const RIGHT_BUMPER = 0x0000_0400;
+        /// Left trigger. Has a value of `0x0000_0800`.
+        const LEFT_TRIGGER = 0x0000_0800;
+        /// Right trigger. Has a value of `0x0000_1000`.
+        const RIGHT_TRIGGER = 0x0000_1000;
+        /// Left analog stick click. Has a value of `0x0000_2000`.
+        const LEFT_STICK_CLICK = 0x0000_2000;
+        /// Right analog stick click. Has a value of `0x0000_4000`.
+        const RIGHT_STICK_CLICK = 0x0000_4000;
+        /// Right analog stick left. Has a value of `0x0000_8000`.
+        const RIGHT_STICK_LEFT = 0x0000_8000;
+        /// Right analog stick right. Has a value of `0x0001_0000`
+        const RIGHT_STICK_RIGHT = 0x0001_0000;
+        /// Right analog stick up. Has a value of `0x0002_0000`
+        const RIGHT_STICK_UP = 0x0002_0000;
+        /// Right analog stick down. Has a value of `0x0004_0000`
+        const RIGHT_STICK_DOWN = 0x0004_0000;
+        /// Special button. Has a value of `0x0008_0000`.
+        const SPECIAL = 0x0008_0000;
+        /// UDP Action 1. Has a value of `0x0010_0000`.
+        const UDP_ACTION_1 = 0x0010_0000;
+        /// UDP Action 2. Has a value of `0x0020_0000`.
+        const UDP_ACTION_2 = 0x0020_0000;
+        /// UDP Action 3. Has a value of `0x0040_0000`.
+        const UDP_ACTION_3 = 0x0040_0000;
+        /// UDP Action 4. Has a value of `0x0080_0000`.
+        const UDP_ACTION_4 = 0x0080_0000;
+        /// UDP Action 5. Has a value of `0x0100_0000`.
+        const UDP_ACTION_5 = 0x0100_0000;
+        /// UDP Action 6. Has a value of `0x0200_0000`.
+        const UDP_ACTION_6 = 0x0200_0000;
+        /// UDP Action 7. Has a value of `0x0400_0000`.
+        const UDP_ACTION_7 = 0x0400_0000;
+        /// UDP Action 8. Has a value of `0x0800_0000`.
+        const UDP_ACTION_8 = 0x0800_0000;
+        /// UDP Action 9. Has a value of `0x1000_0000`.
+        const UDP_ACTION_9 = 0x1000_0000;
+        /// UDP Action 10. Has a value of `0x2000_0000`.
+        const UDP_ACTION_10 = 0x2000_0000;
+        /// UDP Action 11. Has a value of `0x4000_0000`.
+        const UDP_ACTION_11 = 0x4000_0000;
+        /// UDP Action 12. Has a value of `0x8000_0000`.
+        const UDP_ACTION_12 = 0x8000_0000;
     }
 }
 
