@@ -7,7 +7,7 @@ This is a Rust crate that allows you to convert binary data from F1 24, F1 23, a
 Add `f1-game-packet-parser` to your project by running this command:
 
 ```
-cargo add f1_game_packet_parser
+cargo add f1-game-packet-parser
 ```
 
 ## Example
