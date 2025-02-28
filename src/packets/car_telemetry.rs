@@ -4,6 +4,11 @@ use crate::constants::{RevLights, Surface};
 use binrw::BinRead;
 use serde::{Deserialize, Serialize};
 
+// f32 range ends were offset by a tenth to account for values ever so slightly
+// greater or lower than the respective extreme.
+// There's probably a better way of going about handling this,
+// but this will do for now.
+
 #[non_exhaustive]
 #[derive(BinRead, PartialEq, PartialOrd, Copy, Clone, Debug, Serialize, Deserialize)]
 #[br(little, import(_packet_format: u16))]
@@ -13,7 +18,7 @@ pub struct CarTelemetryData {
     /// Amount of throttle applied. Value in range `(0.0..=1.0)`.
     #[br(
         assert(
-            (0.0..=1.0).contains(&throttle),
+            (-0.1..=1.1).contains(&throttle),
             "Car telemetry entry has an invalid throttle value: {}",
             throttle
         ),
@@ -22,7 +27,7 @@ pub struct CarTelemetryData {
     /// Steering lock. Value in range `(-1.0..=1.0)`.
     #[br(
         assert(
-            (-1.0..=1.0).contains(&steer),
+            (-1.1..=1.1).contains(&steer),
             "Car telemetry entry has an invalid steering lock value: {}",
             steer
         ),
@@ -31,7 +36,7 @@ pub struct CarTelemetryData {
     /// Amount of brake applied. Value in range `(0.0..=1.0)`.
     #[br(
         assert(
-            (0.0..=1.0).contains(&brake),
+            (-0.1..=1.1).contains(&brake),
             "Car telemetry entry has an invalid brake value: {}",
             brake
         ),
