@@ -1,11 +1,17 @@
 [package]
 name = "f1-game-packet-parser"
-version = "0.1.0"
+description = "Convert binary data from F1 24, F1 23, and F1 22 UDP telemetry into organised structs."
+version = "1.0.0"
 edition = "2021"
 rust-version = "1.78"
+readme = "README.md"
+repository = "https://github.com/maciejpedzich/f1-game-packet-parser"
+keywords = ["f1", "f1-telemetry", "f1-udp-parser", "f1-udp-telemetry", "f1-telemetry-parser"]
+categories = ["parser-implementations"]
+authors = ["Maciej Pędzich <contact@maciejpedzi.ch>"]
 license = "MIT"
 
 [dependencies]
-binrw = "0.14"
-bitflags = "2.8"
-serde = { version = "1.0", features = ["derive"] }
+binrw = "0.14.1"
+bitflags = "2.8.0"
+serde = { version = "1.0.218", features = ["derive"] }
