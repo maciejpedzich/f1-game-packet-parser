@@ -1,11 +1,10 @@
-//! Convert raw binary data from F1 24, F1 23, and F1 22 UDP telemetry into organised structs.
+//! Convert binary data from F1 24, F1 23, and F1 22 UDP telemetry into organised structs.
 //! ## Getting started
 //!
-//! Add `f1_game_packet_parser` to your project's `Cargo.toml` file:
+//! Add `f1_game_packet_parser` to your project by running the following command:
 //!
-//! ```toml
-//! [dependencies]
-//! f1_game_packet_parser = "1.0.0"
+//! ```sh
+//! cargo add f1-game-packet-parser
 //! ```
 //!
 //! ### Basic UDP client
@@ -173,6 +172,8 @@
 //! }
 //! ```
 //!
+//! See the respective structs' documentation for a complete list of constants and methods.
+//!
 //! ## Original documentation links
 //!
 //! - [F1 24](https://forums.ea.com/discussions/f1-24-general-discussion-en/f1-24-udp-specification/8369125)
@@ -197,7 +198,8 @@ use binrw::io::Cursor;
 use binrw::{BinRead, BinReaderExt, BinResult};
 use serde::{Deserialize, Serialize};
 
-/// Attempts to extract F1 game packet data from a shared slice of bytes.
+/// Attempts to extract F1 game packet data from a byte buffer
+/// (such as a [`Vec<u8>`], [`[u8; N]`](array), or [`&[u8]`](slice)).
 ///
 /// ## Errors
 ///
@@ -241,7 +243,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// let invalid_format = 2137u16.to_le_bytes();
-/// let parse_result = f1_game_packet_parser::parse(&invalid_format);
+/// let parse_result = f1_game_packet_parser::parse(invalid_format);
 ///
 /// assert!(parse_result.is_err());
 /// assert_eq!(
@@ -249,7 +251,7 @@ use serde::{Deserialize, Serialize};
 ///     "Invalid or unsupported packet format: 2137 at 0x0"
 /// );
 /// ```
-pub fn parse(data: &[u8]) -> BinResult<F1Packet> {
+pub fn parse<T: AsRef<[u8]>>(data: T) -> BinResult<F1Packet> {
     let mut cursor = Cursor::new(data);
     let packet: F1Packet = cursor.read_le()?;
 
@@ -305,7 +307,7 @@ pub struct F1Packet {
     /// Session history data for a specific car.
     #[br(if(header.packet_id == PacketId::SessionHistory), args(header.packet_format))]
     pub session_history: Option<F1PacketSessionHistory>,
-    /// In-depth details about tyre sets assigned to a vehicle during the session.
+    /// Details of tyre sets assigned to a vehicle during the session.
     /// Available from the 2023 format onwards.
     #[br(if(header.packet_id == PacketId::TyreSets), args(header.packet_format))]
     pub tyre_sets: Option<F1PacketTyreSets>,
@@ -313,7 +315,7 @@ pub struct F1Packet {
     /// Available from the 2023 format onwards.
     #[br(if(header.packet_id == PacketId::MotionEx), args(header.packet_format))]
     pub motion_ex: Option<F1PacketMotionEx>,
-    /// Extra information that's only relevant to time trial game mode.
+    /// Extra information that's only relevant to the time trial game mode.
     /// Available from the 2024 format onwards.
     #[br(if(header.packet_id == PacketId::TimeTrial), args(header.packet_format))]
     pub time_trial: Option<F1PacketTimeTrial>,
