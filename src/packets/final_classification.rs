@@ -41,15 +41,18 @@ pub struct FinalClassificationData {
     )]
     pub num_tyre_stints: usize,
     /// Actual tyres used by the driver.
-    /// Should have a size equal to `num_tyre_stints`.
+    /// Should have a size equal to
+    /// [`num_tyre_stints`](field@FinalClassificationData::num_tyre_stints).
     #[br(count(num_tyre_stints), pad_after(MAX_NUM_TYRE_STINTS - num_tyre_stints))]
     pub tyre_stints_actual: Vec<ActualTyreCompound>,
     /// Visual tyres used by the driver.
-    /// Should have a size equal to `num_tyre_stints`.
+    /// Should have a size equal to
+    /// [`num_tyre_stints`](field@FinalClassificationData::num_tyre_stints).
     #[br(count(num_tyre_stints), pad_after(MAX_NUM_TYRE_STINTS - num_tyre_stints))]
     pub tyre_stints_visual: Vec<VisualTyreCompound>,
     /// The lap numbers the stints end on.
-    /// Should have a size equal to `num_tyre_stints`.
+    /// Should have a size equal to
+    /// [`num_tyre_stints`](field@FinalClassificationData::num_tyre_stints).
     #[br(count(num_tyre_stints), pad_after(MAX_NUM_TYRE_STINTS - num_tyre_stints))]
     pub tyre_stints_end_laps: Vec<u8>,
 }
