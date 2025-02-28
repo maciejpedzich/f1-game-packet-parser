@@ -5,6 +5,7 @@ version = "1.0.0"
 edition = "2021"
 rust-version = "1.78"
 readme = "README.md"
+homepage = "https://github.com/maciejpedzich/f1-game-packet-parser"
 repository = "https://github.com/maciejpedzich/f1-game-packet-parser"
 keywords = ["f1", "f1-telemetry", "f1-udp-parser", "f1-udp-telemetry", "f1-telemetry-parser"]
 categories = ["parser-implementations"]
