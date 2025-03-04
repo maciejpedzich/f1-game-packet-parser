@@ -1,7 +1,7 @@
 //! Convert binary data from F1 24, F1 23, and F1 22 UDP telemetry into organised structs.
 //! ## Getting started
 //!
-//! Add `f1_game_packet_parser` to your project by running the following command:
+//! Add `f1-game-packet-parser` to your project by running the following command:
 //!
 //! ```sh
 //! cargo add f1-game-packet-parser

@@ -105,7 +105,7 @@ pub enum Weather {
     Storm = 5,
 }
 
-/// Temperature change direction. Represents a [`u8`].
+/// Temperature change direction. Represents an [`i8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
@@ -1067,7 +1067,7 @@ pub enum ErsDeployMode {
     Hotlap = 3,
 }
 
-/// Flag the driver is currently being shown. Represents a [`u8`].
+/// Flag the driver is currently being shown. Represents an [`i8`].
 #[non_exhaustive]
 #[derive(
     BinRead,
