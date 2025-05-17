@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5](https://github.com/maciejpedzich/f1-game-packet-parser/compare/v1.0.4...v1.0.5) - 2025-05-17
+
+### Other
+
+- *(deps)* bump the patch-updates group with 3 updates
+
 ## [1.0.4](https://github.com/maciejpedzich/f1-game-packet-parser/compare/v1.0.3...v1.0.4) - 2025-05-09
 
 ### Other
