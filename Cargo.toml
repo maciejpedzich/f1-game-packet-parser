@@ -19,5 +19,5 @@ exclude = [
 
 [dependencies]
 binrw = "0.15.0"
-bitflags = "2.9.0"
+bitflags = "2.9.1"
 serde = { version = "1.0.219", features = ["derive"] }
